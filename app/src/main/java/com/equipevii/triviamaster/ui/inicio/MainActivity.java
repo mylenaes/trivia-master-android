@@ -1,4 +1,4 @@
-package com.equipevii.triviamaster.ui.inicio;
+package equipevii.triviamaster.ui.inicio;
 
 import android.os.Bundle;
 
