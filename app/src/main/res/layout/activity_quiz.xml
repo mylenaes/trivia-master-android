@@ -26,7 +26,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Questão 1 de 10"
+                android:text="Questão 1 de 5"
                 android:textColor="#FFFFFF"
                 android:textSize="18sp"
                 android:textStyle="bold">
@@ -53,8 +53,8 @@
             android:layout_width="match_parent"
             android:layout_height="10dp"
             android:layout_marginTop="16dp"
-            android:max="10"
-            android:progress="1"
+            android:max="100"
+            android:progress="0"
             android:progressTint="#3B82F6"
             android:progressBackgroundTint="#62748E">
         </ProgressBar>
