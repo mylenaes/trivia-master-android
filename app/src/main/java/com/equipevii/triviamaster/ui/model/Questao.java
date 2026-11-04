@@ -3,42 +3,42 @@ package com.equipevii.triviamaster.ui.model;
 import java.util.List;
 public class Questao {
     private int id;
-    private String category;
-    private String dificulty;
-    private String statement;
-    private String correctAnswer;
-    private List<String> incorrectAnswers;
+    private String categoria;
+    private String dificuldade;
+    private String enunciado;
+    private String respostaCorreta;
+    private List<String> respostasErradas;
 
-    public Questao(int id, String category, String dificulty, String statement, String correctAnswer, List<String> incorrectAnswers){
+    public Questao(int id, String categoria, String dificuldade, String enunciado, String respostaCorreta, List<String> respostasErradas){
         this.id = id;
-        this.category = category;
-        this.dificulty = dificulty;
-        this.statement = statement;
-        this.correctAnswer = correctAnswer;
-        this.incorrectAnswers = incorrectAnswers;
+        this.categoria = categoria;
+        this.dificuldade = dificuldade;
+        this.enunciado = enunciado;
+        this.respostaCorreta = respostaCorreta;
+        this.respostasErradas = respostasErradas;
     }
 
     public int getId(){
         return id;
     }
 
-    public String getCategory(){
-        return category;
+    public String getCategoria(){
+        return categoria;
     }
 
-    public String getDificulty(){
-        return dificulty;
+    public String getDificuldade(){
+        return dificuldade;
     }
 
-    public String getStatement(){
-        return statement;
+    public String getEnunciado(){
+        return enunciado;
     }
 
-    public String getCorrectAnswer(){
-        return correctAnswer;
+    public String getRespostaCorreta(){
+        return respostaCorreta;
     }
 
-    public List<String> getIncorrectAnswers(){
-        return incorrectAnswers;
+    public List<String> getRespostasErradas(){
+        return respostasErradas;
     }
 }

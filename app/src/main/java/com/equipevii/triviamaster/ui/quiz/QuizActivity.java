@@ -9,7 +9,6 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,49 +20,51 @@ import com.equipevii.triviamaster.ui.model.Questao;
 
 public class QuizActivity extends AppCompatActivity {
     private ActivityQuizBinding binding;    //objeto pra manipular interface
-    private LinearLayout selectedOption;    //opção selecionada
-    private String correctAnswer = "Kotlin";    //opção coreta
-    private boolean answered = false;   //se já respondeu
-    private List<Questao> questionsList;    //questões da partida
-    private int actualQuestionIndex = 0;    //em qual questão está
-    private List<String> actualOptions; //opções da questão atual
+    private LinearLayout opcaoSelecionada;
+    private String opcaoCorreta;
+    private boolean respondeu = false;
+    private List<Questao> listaQuestoes;
+    private int indiceQuestaotual = 0;
+    private List<String> alternativasAtuais;
+    private int pontuacaoAtual = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityQuizBinding.inflate(getLayoutInflater()); //ligação entre java e xml
         setContentView(binding.getRoot());  //definindo layout
-        createQuestionsList();  //criando lista de questões
-        setupOptions(); //configurações de eventos de clique
-        loadQuestion(); //carregando questão
+        atualizarPontuacao();
+        criarListaQuestoes();
+        configurarCliqueOpcoes();
+        carregarQuestao();
     }
 
-    private void setupOptions(){
+    private void configurarCliqueOpcoes(){
         binding.optionA.setOnClickListener(v ->
-                checkAnswer(
+                checarResposta(
                         binding.optionA,
                         binding.tvOptionA.getText().toString()));
 
         binding.optionB.setOnClickListener(v ->
-                checkAnswer(
+                checarResposta(
                         binding.optionB,
                         binding.tvOptionB.getText().toString()));
 
         binding.optionC.setOnClickListener(v ->
-                checkAnswer(
+                checarResposta(
                         binding.optionC,
                         binding.tvOptionC.getText().toString()));
 
         binding.optionD.setOnClickListener(v ->
-                checkAnswer(
+                checarResposta(
                         binding.optionD,
                         binding.tvOptionD.getText().toString()));
 
         binding.btnNext.setOnClickListener(v ->{
             //se ainda tiverem questões, passa pra próxima
-            if(actualQuestionIndex < questionsList.size() - 1){
-                actualQuestionIndex++;
-                loadQuestion();
+            if(indiceQuestaotual < listaQuestoes.size() - 1){
+                indiceQuestaotual++;
+                carregarQuestao();
             } else{ //se chegar oa final das questões diz que acabou
                 Toast.makeText(
                         this,
@@ -74,35 +75,40 @@ public class QuizActivity extends AppCompatActivity {
         });
     }
 
-    private void checkAnswer(LinearLayout option, String answer){
-        if(answered){   //se já respondeu, não pode responder de novo
+    private void checarResposta(LinearLayout option, String answer){
+        if(respondeu){   //se já respondeu, não pode responder de novo
             return;
         }
 
-        answered = true;
-        selectedOption = option;
+        respondeu = true;
+        opcaoSelecionada = option;
 
-        boolean isCorrect = answer.equals(correctAnswer);   //verificar se tá correto
+        boolean correta = answer.equals(opcaoCorreta);   //verificar se tá correto
 
-        if(isCorrect){
+        if(correta){
             //destaca que a alternativa é correta
-            selectedOption.setBackgroundResource(
+            opcaoSelecionada.setBackgroundResource(
               R.drawable.bg_option_correct
             );
-            getOptionText(option).setTextColor(Color.parseColor("#1EAB53"));
+            getTextoAlternativa(option).setTextColor(Color.parseColor("#1EAB53"));
+
+            //calcular pontuação da questão de acordo com a dificuldade
+            Questao questaoAtual = listaQuestoes.get(indiceQuestaotual);
+            pontuacaoAtual += calcularPontos(questaoAtual);
+            atualizarPontuacao();
 
             //exibe feedback
             binding.tvFeedback.setText("Resposta correta!");
             binding.tvFeedback.setTextColor(Color.parseColor("#1EAB53"));
         } else{
             //destaca que a alternativa é incorreta
-            selectedOption.setBackgroundResource(
+            opcaoSelecionada.setBackgroundResource(
                     R.drawable.bg_option_error
             );
-            getOptionText(option).setTextColor(Color.parseColor("#E23439"));
+            getTextoAlternativa(option).setTextColor(Color.parseColor("#E23439"));
 
             //destaca alternativa correta
-            highlightCorrectAnswer();
+            destacarRespostaCorreta();
 
             //exibe feedback
             binding.tvFeedback.setText("Resposta incorreta!");
@@ -116,28 +122,28 @@ public class QuizActivity extends AppCompatActivity {
         binding.btnNext.setEnabled(true);
     }
 
-    private TextView getOptionText(LinearLayout option){
+    private TextView getTextoAlternativa(LinearLayout option){
         return (TextView) option.getChildAt(1); //segundo elemento do linearlayout da opção
     }
 
-    private void highlightCorrectAnswer(){
-        if(binding.tvOptionA.getText().toString().equals(correctAnswer)){
+    private void destacarRespostaCorreta(){
+        if(binding.tvOptionA.getText().toString().equals(opcaoCorreta)){
             binding.optionA.setBackgroundResource(
                     R.drawable.bg_option_correct
             );
             binding.tvOptionA.setTextColor(Color.parseColor("#1EAB53"));
-        } else if(binding.tvOptionB.getText().toString().equals(correctAnswer)){
+        } else if(binding.tvOptionB.getText().toString().equals(opcaoCorreta)){
             binding.optionB.setBackgroundResource(
                     R.drawable.bg_option_correct
             );
             binding.tvOptionB.setTextColor(Color.parseColor("#1EAB53"));
-        } else if(binding.tvOptionC.getText().toString().equals(correctAnswer)){
+        } else if(binding.tvOptionC.getText().toString().equals(opcaoCorreta)){
             binding.optionC.setBackgroundResource(
                     R.drawable.bg_option_correct
             );
 
             binding.tvOptionC.setTextColor(Color.parseColor("#1EAB53"));
-        } else if(binding.tvOptionD.getText().toString().equals(correctAnswer)){
+        } else if(binding.tvOptionD.getText().toString().equals(opcaoCorreta)){
             binding.optionD.setBackgroundResource(
                     R.drawable.bg_option_correct
             );
@@ -146,11 +152,10 @@ public class QuizActivity extends AppCompatActivity {
         }
     }
 
-    //resetar pra próxima questão
-    private void resetQuestionUI(){
+    private void resetarUIQuestao(){
         //reseta variáveis
-        answered = false;
-        selectedOption = null;
+        respondeu = false;
+        opcaoSelecionada = null;
 
         //reseta alternativas
         binding.optionA.setBackgroundResource(
@@ -177,10 +182,10 @@ public class QuizActivity extends AppCompatActivity {
         binding.btnNext.setEnabled(false);
     }
 
-    private void createQuestionsList(){
-        questionsList = new ArrayList<>();
+    private void criarListaQuestoes(){
+        listaQuestoes = new ArrayList<>();
 
-        questionsList.add(new Questao(
+        listaQuestoes.add(new Questao(
                 1,
                 "Computadores",
                 "Médio",
@@ -188,7 +193,7 @@ public class QuizActivity extends AppCompatActivity {
                 "Kotlin",
                 Arrays.asList("Swift", "Ruby", "PHP")
         ));
-        questionsList.add(new Questao(
+        listaQuestoes.add(new Questao(
                 2,
                 "Computadores",
                 "Médio",
@@ -196,7 +201,7 @@ public class QuizActivity extends AppCompatActivity {
                 "8",
                 Arrays.asList("4", "16", "32")
         ));
-        questionsList.add(new Questao(
+        listaQuestoes.add(new Questao(
                 3,
                 "Computadores",
                 "Médio",
@@ -204,7 +209,7 @@ public class QuizActivity extends AppCompatActivity {
                 "443",
                 Arrays.asList("80", "21", "8080")
         ));
-        questionsList.add(new Questao(
+        listaQuestoes.add(new Questao(
                 4,
                 "Computadores",
                 "Médio",
@@ -212,7 +217,7 @@ public class QuizActivity extends AppCompatActivity {
                 "Google",
                 Arrays.asList("Apple", "Microsoft", "Samsung")
         ));
-        questionsList.add(new Questao(
+        listaQuestoes.add(new Questao(
                 5,
                 "Computadores",
                 "Médio",
@@ -222,40 +227,56 @@ public class QuizActivity extends AppCompatActivity {
         ));
     }
 
-    private void loadQuestion(){
-        //pega a questão atual
-        Questao actualQuestion = questionsList.get(actualQuestionIndex);
+    private void carregarQuestao(){
+        Questao questaoAtual = listaQuestoes.get(indiceQuestaotual);
 
         //calcular e atualizar progressbar
-        int progress = ((actualQuestionIndex + 1) * 100) / questionsList.size();
-        binding.progressQuiz.setProgress(progress);
+        int progresso = ((indiceQuestaotual + 1) * 100) / listaQuestoes.size();
+        binding.progressQuiz.setProgress(progresso);
 
         //atualiza enunciado
-        binding.tvQuestion.setText(actualQuestion.getStatement());
+        binding.tvQuestion.setText(questaoAtual.getEnunciado());
 
-        //respota correta
-        correctAnswer = actualQuestion.getCorrectAnswer();
+        opcaoCorreta = questaoAtual.getRespostaCorreta();
 
-        //opções atuais
-        actualOptions = new ArrayList<>(
-                actualQuestion.getIncorrectAnswers()
+        alternativasAtuais = new ArrayList<>(
+                questaoAtual.getRespostasErradas()
         );
-        actualOptions.add(correctAnswer);
+        alternativasAtuais.add(opcaoCorreta);
 
         //embaralhar as opções
-        Collections.shuffle(actualOptions);
+        Collections.shuffle(alternativasAtuais);
 
         //exibir as opções uma em cada textview
-        binding.tvOptionA.setText(actualOptions.get(0));
-        binding.tvOptionB.setText(actualOptions.get(1));
-        binding.tvOptionC.setText(actualOptions.get(2));
-        binding.tvOptionD.setText(actualOptions.get(3));
+        binding.tvOptionA.setText(alternativasAtuais.get(0));
+        binding.tvOptionB.setText(alternativasAtuais.get(1));
+        binding.tvOptionC.setText(alternativasAtuais.get(2));
+        binding.tvOptionD.setText(alternativasAtuais.get(3));
 
         //atualizar numero da questão
-        binding.tvQuestionNumber.setText("Questão: " + (actualQuestionIndex + 1));
+        binding.tvQuestionNumber.setText("Questão: " + (indiceQuestaotual + 1));
 
         //resetar pra nova questão
-        resetQuestionUI();
+        resetarUIQuestao();
+    }
+
+    private int calcularPontos(Questao questao){
+        String dificuldade = questao.getDificuldade();
+
+        switch (dificuldade.toLowerCase()){
+            case "fácil":
+                return 1;
+            case "médio":
+                return 2;
+            case "difícil":
+                return 3;
+            default:
+                return 0;
+        }
+    }
+
+    private void atualizarPontuacao(){
+        binding.tvScore.setText("Pontos: " + pontuacaoAtual);
     }
 
 }
