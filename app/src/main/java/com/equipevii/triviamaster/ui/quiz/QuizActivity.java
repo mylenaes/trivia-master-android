@@ -1,38 +1,24 @@
 package com.equipevii.triviamaster.ui.quiz;
 
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.widget.LinearLayout;
 import android.graphics.Color;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.equipevii.triviamaster.R;
 import com.equipevii.triviamaster.databinding.ActivityQuizBinding;
-import com.equipevii.triviamaster.ui.model.Questao;
 
 public class QuizActivity extends AppCompatActivity {
     private ActivityQuizBinding binding;    //objeto pra manipular interface
     private LinearLayout opcaoSelecionada;
     private String opcaoCorreta;
-    private boolean respondeu = false;
-    private List<Questao> listaQuestoes;
-    private int indiceQuestaotual = 0;
-    private List<String> alternativasAtuais;
-    private int pontuacaoAtual = 0;
 
-    private static final long TEMPO_TOTAL = 20000; //20000ms = 20s
-    private static final long INTERVALO = 1000; //1000ms = 1s
-    private CountDownTimer countDownTimer;   //objeto para contagem regressiva
-    private long tempoRestante = TEMPO_TOTAL;
+    private QuizViewModel quizViewModel;
 
 
     @Override
@@ -40,19 +26,11 @@ public class QuizActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityQuizBinding.inflate(getLayoutInflater()); //ligação entre java e xml
         setContentView(binding.getRoot());  //definindo layout
-        atualizarPontuacao();
-        criarListaQuestoes();
+        //procura instancia de view model e se não existir cria
+        // isso permite que view model sobreviva à recriação da activity
+        quizViewModel = new ViewModelProvider(this).get(QuizViewModel.class);
+        observarDados();
         configurarCliqueOpcoes();
-        carregarQuestao();
-    }
-
-    protected void onDestroy(){
-        super.onDestroy();
-
-        //contador para se a tela for destruída
-        if(countDownTimer != null){
-            countDownTimer.cancel();
-        }
     }
 
     private void configurarCliqueOpcoes(){
@@ -77,11 +55,12 @@ public class QuizActivity extends AppCompatActivity {
                         binding.tvOpcaoD.getText().toString()));
 
         binding.btnProximo.setOnClickListener(v ->{
-            //se ainda tiverem questões, passa pra próxima
-            if(indiceQuestaotual < listaQuestoes.size() - 1){
-                indiceQuestaotual++;
-                carregarQuestao();
-            } else{ //se chegar oa final das questões diz que acabou
+            //checar se avancou a questao ou se chegou no final
+            boolean avancou = quizViewModel.avancarQuestao();
+
+            if(avancou){
+                resetarUIQuestao();
+            } else{
                 Toast.makeText(
                         this,
                         "Fim do quiz!",
@@ -91,66 +70,15 @@ public class QuizActivity extends AppCompatActivity {
         });
     }
 
-    private void checarResposta(LinearLayout option, String answer){
-        if(respondeu){   //se já respondeu, não pode responder de novo
-            return;
-        }
+    private void checarResposta(LinearLayout opcao, String resposta){
+        opcaoSelecionada = opcao;
 
-        respondeu = true;
-        opcaoSelecionada = option;
-
-        //parar o timer quando tiver respondido
-        if(countDownTimer != null){
-            countDownTimer.cancel();
-        }
-
-        boolean correta = answer.equals(opcaoCorreta);   //verificar se tá correto
-
-        if(correta){
-            //destaca que a alternativa é correta
-            opcaoSelecionada.setBackgroundResource(
-              R.drawable.bg_opcao_correta
-            );
-            getTextoAlternativa(option).setTextColor(Color.parseColor("#1EAB53"));
-
-            //calcular pontuação da questão de acordo com a dificuldade
-            Questao questaoAtual = listaQuestoes.get(indiceQuestaotual);
-            int pontosBase = calcularPontos(questaoAtual);
-
-            //calcular bônus de tempo e somar aos pontos base
-            int bonus = calcularBonusTempo(pontosBase);
-            pontuacaoAtual += pontosBase + bonus;
-
-            //atualizar a pontuação
-            atualizarPontuacao();
-
-            //exibe feedback
-            binding.tvFeedback.setText("Resposta correta!");
-            binding.tvFeedback.setTextColor(Color.parseColor("#1EAB53"));
-        } else{
-            //destaca que a alternativa é incorreta
-            opcaoSelecionada.setBackgroundResource(
-                    R.drawable.bg_opcao_incorreta
-            );
-            getTextoAlternativa(option).setTextColor(Color.parseColor("#E23439"));
-
-            //destaca alternativa correta
-            destacarRespostaCorreta();
-
-            //exibe feedback
-            binding.tvFeedback.setText("Resposta incorreta!");
-            binding.tvFeedback.setTextColor(Color.parseColor("#E23439"));
-        }
-
-        //tornar feedback visível
-        binding.tvFeedback.setVisibility(View.VISIBLE);
-
-        //tornar botão de próximo clicável
-        binding.btnProximo.setEnabled(true);
+        //solicitar que view model verifique a resposta
+        quizViewModel.verificarResposta(resposta);
     }
 
-    private TextView getTextoAlternativa(LinearLayout option){
-        return (TextView) option.getChildAt(1); //segundo elemento do linearlayout da opção
+    private TextView getTextoAlternativa(LinearLayout opcao){
+        return (TextView) opcao.getChildAt(1); //segundo elemento do linearlayout da opção
     }
 
     private void destacarRespostaCorreta(){
@@ -181,7 +109,6 @@ public class QuizActivity extends AppCompatActivity {
 
     private void resetarUIQuestao(){
         //reseta variáveis
-        respondeu = false;
         opcaoSelecionada = null;
 
         //reseta alternativas
@@ -209,164 +136,90 @@ public class QuizActivity extends AppCompatActivity {
         binding.btnProximo.setEnabled(false);
     }
 
-    private void criarListaQuestoes(){
-        listaQuestoes = new ArrayList<>();
+    private void observarDados(){
+        //observar questao atual e sua opcao correta
+        quizViewModel.getQuestaoAtual().observe(this, questao -> {
+            binding.tvQuestao.setText(questao.getEnunciado());
+            opcaoCorreta = questao.getRespostaCorreta();
+        });
 
-        listaQuestoes.add(new Questao(
-                1,
-                "Computadores",
-                "Médio",
-                "Qual linguagem é usada no Android Studio além de Java?",
-                "Kotlin",
-                Arrays.asList("Swift", "Ruby", "PHP")
-        ));
-        listaQuestoes.add(new Questao(
-                2,
-                "Computadores",
-                "Médio",
-                "Quantos bits tem um byte?",
-                "8",
-                Arrays.asList("4", "16", "32")
-        ));
-        listaQuestoes.add(new Questao(
-                3,
-                "Computadores",
-                "Médio",
-                "Qual porta padrão do HTTPS?",
-                "443",
-                Arrays.asList("80", "21", "8080")
-        ));
-        listaQuestoes.add(new Questao(
-                4,
-                "Computadores",
-                "Médio",
-                "Qual empresa criou o Android?",
-                "Google",
-                Arrays.asList("Apple", "Microsoft", "Samsung")
-        ));
-        listaQuestoes.add(new Questao(
-                5,
-                "Computadores",
-                "Médio",
-                "O que significa CPU?",
-                "Central Processing Unit",
-                Arrays.asList("Computer Power Unit", "Core Program Utility", "Central Print Unit")
-        ));
-    }
+        //observar alternativas
+        quizViewModel.getAlternativasAtuais().observe(this, alternativas -> {
+             binding.tvOpcaoA.setText(alternativas.get(0));
+             binding.tvOpcaoB.setText(alternativas.get(1));
+             binding.tvOpcaoC.setText(alternativas.get(2));
+             binding.tvOpcaoD.setText(alternativas.get(3));
+        });
 
-    private void carregarQuestao(){
-        Questao questaoAtual = listaQuestoes.get(indiceQuestaotual);
+        //observar progresso
+        quizViewModel.getProgresso().observe(this, progresso -> {
+            binding.progressoQuiz.setProgress(progresso);
+        });
 
-        //calcular e atualizar progressbar
-        int progresso = ((indiceQuestaotual + 1) * 100) / listaQuestoes.size();
-        binding.progressoQuiz.setProgress(progresso);
+        //observar numero da questao
+        quizViewModel.getNumeroQuestao().observe(this, numeroQuestao ->{
+            binding.tvNumeroQuestao.setText("Questão: " + numeroQuestao);
+        });
 
-        //atualiza enunciado
-        binding.tvQuestao.setText(questaoAtual.getEnunciado());
-
-        opcaoCorreta = questaoAtual.getRespostaCorreta();
-
-        alternativasAtuais = new ArrayList<>(
-                questaoAtual.getRespostasErradas()
-        );
-        alternativasAtuais.add(opcaoCorreta);
-
-        //embaralhar as opções
-        Collections.shuffle(alternativasAtuais);
-
-        //exibir as opções uma em cada textview
-        binding.tvOpcaoA.setText(alternativasAtuais.get(0));
-        binding.tvOpcaoB.setText(alternativasAtuais.get(1));
-        binding.tvOpcaoC.setText(alternativasAtuais.get(2));
-        binding.tvOpcaoD.setText(alternativasAtuais.get(3));
-
-        //atualizar numero da questão
-        binding.tvNumeroQuestao.setText("Questão: " + (indiceQuestaotual + 1));
-
-        //resetar pra nova questão
-        resetarUIQuestao();
-        iniciarTimer();
-    }
-
-    private int calcularPontos(Questao questao){
-        String dificuldade = questao.getDificuldade();
-
-        switch (dificuldade.toLowerCase()){
-            case "fácil":
-                return 1;
-            case "médio":
-                return 2;
-            case "difícil":
-                return 3;
-            default:
-                return 0;
-        }
-    }
-
-    private void atualizarPontuacao(){
-        binding.tvPontuacao.setText("Pontos: " + pontuacaoAtual);
-    }
-
-    private void iniciarTimer(){
-        //cancela timer anterior (se tiver)
-        if(countDownTimer != null){
-            countDownTimer.cancel();
-        }
-
-        //reiniciar tempo
-        tempoRestante = TEMPO_TOTAL;
-
-        countDownTimer = new CountDownTimer(TEMPO_TOTAL, INTERVALO) {
-            @Override
-            //no final do timer
-            public void onFinish() {
-                tempoRestante = 0;
-                binding.tvTimer.setText("0s");
-                if(!respondeu){ //se ainda não tiver respondido
-                    tratarTempoEsgotado();
-                }
-
+        //observar se acertou ou errou
+        quizViewModel.getRespostaCorreta().observe(this, correta ->{
+            //se ainda não teve resposta
+            if(correta == null){
+                return;
             }
 
-            @Override
-            //enquanto o tempo passa
-            public void onTick(long l) {
-                tempoRestante = l;
-                int segundos = (int) (l / 1000);    //descobrir quantos segundos falta
-                binding.tvTimer.setText(segundos + "s");
-
-                if(segundos > 10){
-                    binding.tvTimer.setBackgroundResource(R.drawable.bg_circulo);
-                    binding.tvTimer.setTextColor(Color.parseColor("#192858"));
-                }
-
-                if(segundos <= 10){
-                    binding.tvTimer.setBackgroundResource(R.drawable.bg_circulo_vermelho);
-                    binding.tvTimer.setTextColor(Color.parseColor("#FFFFFF"));
-                }
-
+            if(correta){
+                //acertou
+                opcaoSelecionada.setBackgroundResource(R.drawable.bg_opcao_correta);
+                getTextoAlternativa(opcaoSelecionada).setTextColor(Color.parseColor("#1EAB53"));
+                binding.tvFeedback.setText("Resposta correta!");
+                binding.tvFeedback.setTextColor(Color.parseColor("#1EAB53"));
+            } else{
+                //errou
+                opcaoSelecionada.setBackgroundResource(R.drawable.bg_opcao_incorreta);
+                getTextoAlternativa(opcaoSelecionada).setTextColor(Color.parseColor("#E23439"));
+                destacarRespostaCorreta();
+                binding.tvFeedback.setText("Resposta incorreta!");
+                binding.tvFeedback.setTextColor(Color.parseColor("#E23439"));
             }
-        }.start();
-    }
+            //mostrar feedback
+            binding.tvFeedback.setVisibility(View.VISIBLE);
+            //habilitar botão próximo
+            binding.btnProximo.setEnabled(true);
+        });
 
-    private void tratarTempoEsgotado(){
-        //marcar como se tivesse respondido e mostrar resposta correta
-        respondeu = true;
-        destacarRespostaCorreta();
+        quizViewModel.getPontuacao().observe(this, pontos ->{
+            binding.tvPontuacao.setText("Pontos: " + pontos);
+        });
 
-        //mostrar feedback de tempo esgotado
-        binding.tvFeedback.setText("Tempo esgotado!");
-        binding.tvFeedback.setTextColor(Color.parseColor("#D93025"));
-        binding.tvFeedback.setVisibility(View.VISIBLE);
+        //observar tempo restante
+        quizViewModel.getTempoRestante().observe(this, tempo -> {
+            int segundos = (int) (tempo / 1000); //segundos restantes
+            binding.tvTimer.setText(segundos + "s");
 
-        //habilitar botão de próximo
-        binding.btnProximo.setEnabled(true);
-    }
+            //ficar vermelho se tiver 10s ou menos
+            if(segundos > 10){
+                binding.tvTimer.setBackgroundResource(R.drawable.bg_circulo);
+                binding.tvTimer.setTextColor(Color.parseColor("#192858"));
+            } else{
+                binding.tvTimer.setBackgroundResource(R.drawable.bg_circulo_vermelho);
+                binding.tvTimer.setTextColor(Color.parseColor("#FFFFFF"));
+            }
+        });
 
-    private int calcularBonusTempo(int pontosBase){
-        //pontos base da questão * (tempo restante / tempo total) -> arredondado
-        double proporcaoTempo = (double) tempoRestante / TEMPO_TOTAL;
-        return (int) Math.round(pontosBase * proporcaoTempo);
+        quizViewModel.getTempoEsgotado().observe(this, esgotado ->{
+            //se o tempo não tiver esgotado não faz nada
+            if(esgotado == null || !esgotado){
+                return;
+            }
+
+            //se estiver, mostra resposta correta, feedback e habilita botão próximo
+            destacarRespostaCorreta();
+            binding.tvFeedback.setText("Tempo esgotado!");
+            binding.tvFeedback.setTextColor(Color.parseColor("#D93025"));
+            binding.tvFeedback.setVisibility(View.VISIBLE);
+            binding.btnProximo.setEnabled(true);
+        });
     }
 
 
