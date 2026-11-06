@@ -9,7 +9,7 @@
     <!--Header-->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="190dp"
+        android:layout_height="210dp"
         android:orientation="vertical"
         android:background="#162556"
         android:padding="24dp">
@@ -22,7 +22,7 @@
             android:layout_marginTop="40dp">
 
             <TextView
-                android:id="@+id/tvQuestionNumber"
+                android:id="@+id/tvNumeroQuestao"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -33,14 +33,14 @@
             </TextView>
 
             <TextView
-                android:id="@+id/tvScore"
+                android:id="@+id/tvPontuacao"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Pontos: 0"
                 android:textColor="#FFFFFF"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:background="@drawable/bg_score"
+                android:background="@drawable/bg_pontuacao"
                 android:paddingHorizontal="16dp"
                 android:paddingVertical="8dp">
             </TextView>
@@ -48,7 +48,7 @@
         </LinearLayout>
 
         <ProgressBar
-            android:id="@+id/progressQuiz"
+            android:id="@+id/progressoQuiz"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="10dp"
@@ -59,15 +59,37 @@
             android:progressBackgroundTint="#62748E">
         </ProgressBar>
 
-        <TextView
-            android:id="@+id/tvCategory"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Computadores - Médio"
-            android:textColor="#62748E"
-            android:textSize="16sp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
             android:layout_marginTop="16dp">
-        </TextView>
+
+            <TextView
+                android:id="@+id/tvCategoria"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Computadores - Médio"
+                android:textColor="#62748E"
+                android:textSize="16sp"
+                android:layout_marginRight="20dp">
+            </TextView>
+
+            <TextView
+                android:id="@+id/tvTimer"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:gravity="center"
+                android:background="@drawable/bg_circulo"
+                android:text="20s"
+                android:textColor="#192858"
+                android:textSize="16sp"
+                android:textStyle="bold">
+            </TextView>
+
+        </LinearLayout>
 
     </LinearLayout>
 
@@ -88,10 +110,10 @@
 
             <!--Question-->
             <TextView
-                android:id="@+id/tvQuestion"
+                android:id="@+id/tvQuestao"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_question"
+                android:background="@drawable/bg_enunciado"
                 android:padding="24dp"
                 android:text="Qual linguagem é usada no Android Studio além de Java?"
                 android:textColor="#192858"
@@ -101,12 +123,12 @@
 
             <!--Option A-->
             <LinearLayout
-                android:id="@+id/optionA"
+                android:id="@+id/opcaoA"
                 android:layout_width="match_parent"
                 android:layout_height="82dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:background="@drawable/bg_option"
+                android:background="@drawable/bg_opcao"
                 android:padding="18dp"
                 android:layout_marginTop="24dp"
                 android:clickable="true"
@@ -116,14 +138,14 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:gravity="center"
-                    android:background="@drawable/bg_circle"
+                    android:background="@drawable/bg_circulo"
                     android:text="A"
                     android:textColor="#192858"
                     android:textSize="16sp">
                 </TextView>
                 
                 <TextView
-                    android:id="@+id/tvOptionA"
+                    android:id="@+id/tvOpcaoA"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -136,12 +158,12 @@
             
             <!--Option B-->
             <LinearLayout
-                android:id="@+id/optionB"
+                android:id="@+id/opcaoB"
                 android:layout_width="match_parent"
                 android:layout_height="82dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:background="@drawable/bg_option"
+                android:background="@drawable/bg_opcao"
                 android:padding="18dp"
                 android:layout_marginTop="16dp"
                 android:clickable="true"
@@ -151,14 +173,14 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:gravity="center"
-                    android:background="@drawable/bg_circle"
+                    android:background="@drawable/bg_circulo"
                     android:text="B"
                     android:textColor="#192858"
                     android:textSize="16sp">
                 </TextView>
                 
                 <TextView
-                    android:id="@+id/tvOptionB"
+                    android:id="@+id/tvOpcaoB"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -171,12 +193,12 @@
 
             <!--Option C-->
             <LinearLayout
-                android:id="@+id/optionC"
+                android:id="@+id/opcaoC"
                 android:layout_width="match_parent"
                 android:layout_height="82dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:background="@drawable/bg_option"
+                android:background="@drawable/bg_opcao"
                 android:padding="18dp"
                 android:layout_marginTop="16dp"
                 android:clickable="true"
@@ -186,14 +208,14 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:gravity="center"
-                    android:background="@drawable/bg_circle"
+                    android:background="@drawable/bg_circulo"
                     android:text="C"
                     android:textSize="16sp"
                     android:textColor="#192858">
                 </TextView>
                 
                 <TextView
-                    android:id="@+id/tvOptionC"
+                    android:id="@+id/tvOpcaoC"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -206,12 +228,12 @@
 
             <!--Option D-->
             <LinearLayout
-                android:id="@+id/optionD"
+                android:id="@+id/opcaoD"
                 android:layout_width="match_parent"
                 android:layout_height="82dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:background="@drawable/bg_option"
+                android:background="@drawable/bg_opcao"
                 android:padding="18dp"
                 android:layout_marginTop="16dp"
                 android:clickable="true"
@@ -221,14 +243,14 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:gravity="center"
-                    android:background="@drawable/bg_circle"
+                    android:background="@drawable/bg_circulo"
                     android:text="D"
                     android:textSize="16sp"
                     android:textColor="#192858">
                 </TextView>
                 
                 <TextView
-                    android:id="@+id/tvOptionD"
+                    android:id="@+id/tvOpcaoD"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -259,7 +281,7 @@
 
     <!--Button-->
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnNext"
+        android:id="@+id/btnProximo"
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:layout_marginHorizontal="24dp"
@@ -270,7 +292,7 @@
         android:textColor="#FFFFFF"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:background="@drawable/bg_button_selector"
+        android:background="@drawable/bg_seletor_botao"
         android:backgroundTint="@null"
         android:enabled="false">
     </androidx.appcompat.widget.AppCompatButton>
