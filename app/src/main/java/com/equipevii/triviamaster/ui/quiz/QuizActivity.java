@@ -86,24 +86,24 @@ public class QuizActivity extends AppCompatActivity {
             binding.opcaoA.setBackgroundResource(
                     R.drawable.bg_opcao_correta
             );
-            binding.tvOpcaoA.setTextColor(Color.parseColor("#1EAB53"));
+            binding.tvOpcaoA.setTextColor(getColor(R.color.verde));
         } else if(binding.tvOpcaoB.getText().toString().equals(opcaoCorreta)){
             binding.opcaoB.setBackgroundResource(
                     R.drawable.bg_opcao_correta
             );
-            binding.tvOpcaoB.setTextColor(Color.parseColor("#1EAB53"));
+            binding.tvOpcaoB.setTextColor(getColor(R.color.verde));
         } else if(binding.tvOpcaoC.getText().toString().equals(opcaoCorreta)){
             binding.opcaoC.setBackgroundResource(
                     R.drawable.bg_opcao_correta
             );
 
-            binding.tvOpcaoC.setTextColor(Color.parseColor("#1EAB53"));
+            binding.tvOpcaoC.setTextColor(getColor(R.color.verde));
         } else if(binding.tvOpcaoD.getText().toString().equals(opcaoCorreta)){
             binding.opcaoD.setBackgroundResource(
                     R.drawable.bg_opcao_correta
             );
 
-            binding.tvOpcaoD.setTextColor(Color.parseColor("#1EAB53"));
+            binding.tvOpcaoD.setTextColor(getColor(R.color.verde));
         }
     }
 
@@ -115,19 +115,19 @@ public class QuizActivity extends AppCompatActivity {
         binding.opcaoA.setBackgroundResource(
                 R.drawable.bg_opcao
         );
-        binding.tvOpcaoA.setTextColor(Color.parseColor("#192858"));
+        binding.tvOpcaoA.setTextColor(getColor(R.color.azulPrincipal));
         binding.opcaoB.setBackgroundResource(
                 R.drawable.bg_opcao
         );
-        binding.tvOpcaoB.setTextColor(Color.parseColor("#192858"));
+        binding.tvOpcaoB.setTextColor(getColor(R.color.azulPrincipal));
         binding.opcaoC.setBackgroundResource(
                 R.drawable.bg_opcao
         );
-        binding.tvOpcaoC.setTextColor(Color.parseColor("#192858"));
+        binding.tvOpcaoC.setTextColor(getColor(R.color.azulPrincipal));
         binding.opcaoD.setBackgroundResource(
                 R.drawable.bg_opcao
         );
-        binding.tvOpcaoD.setTextColor(Color.parseColor("#192858"));
+        binding.tvOpcaoD.setTextColor(getColor(R.color.azulPrincipal));
 
         //esconde feedback
         binding.tvFeedback.setVisibility(View.GONE);
@@ -171,16 +171,16 @@ public class QuizActivity extends AppCompatActivity {
             if(correta){
                 //acertou
                 opcaoSelecionada.setBackgroundResource(R.drawable.bg_opcao_correta);
-                getTextoAlternativa(opcaoSelecionada).setTextColor(Color.parseColor("#1EAB53"));
-                binding.tvFeedback.setText("Resposta correta!");
-                binding.tvFeedback.setTextColor(Color.parseColor("#1EAB53"));
+                getTextoAlternativa(opcaoSelecionada).setTextColor(getColor(R.color.verde));
+                binding.tvFeedback.setText(getString(R.string.correta));
+                binding.tvFeedback.setTextColor(getColor(R.color.verde));
             } else{
                 //errou
                 opcaoSelecionada.setBackgroundResource(R.drawable.bg_opcao_incorreta);
-                getTextoAlternativa(opcaoSelecionada).setTextColor(Color.parseColor("#E23439"));
+                getTextoAlternativa(opcaoSelecionada).setTextColor(getColor(R.color.vermelho));
                 destacarRespostaCorreta();
-                binding.tvFeedback.setText("Resposta incorreta!");
-                binding.tvFeedback.setTextColor(Color.parseColor("#E23439"));
+                binding.tvFeedback.setText(getString(R.string.incorreta));
+                binding.tvFeedback.setTextColor(getColor(R.color.vermelho));
             }
             //mostrar feedback
             binding.tvFeedback.setVisibility(View.VISIBLE);
@@ -200,10 +200,10 @@ public class QuizActivity extends AppCompatActivity {
             //ficar vermelho se tiver 10s ou menos
             if(segundos > 10){
                 binding.tvTimer.setBackgroundResource(R.drawable.bg_circulo);
-                binding.tvTimer.setTextColor(Color.parseColor("#192858"));
+                binding.tvTimer.setTextColor(getColor(R.color.azulPrincipal));
             } else{
                 binding.tvTimer.setBackgroundResource(R.drawable.bg_circulo_vermelho);
-                binding.tvTimer.setTextColor(Color.parseColor("#FFFFFF"));
+                binding.tvTimer.setTextColor(getColor(R.color.branco));
             }
         });
 
@@ -215,8 +215,8 @@ public class QuizActivity extends AppCompatActivity {
 
             //se estiver, mostra resposta correta, feedback e habilita botão próximo
             destacarRespostaCorreta();
-            binding.tvFeedback.setText("Tempo esgotado!");
-            binding.tvFeedback.setTextColor(Color.parseColor("#D93025"));
+            binding.tvFeedback.setText(getString(R.string.esgotado));
+            binding.tvFeedback.setTextColor(getColor(R.color.vermelho));
             binding.tvFeedback.setVisibility(View.VISIBLE);
             binding.btnProximo.setEnabled(true);
         });
