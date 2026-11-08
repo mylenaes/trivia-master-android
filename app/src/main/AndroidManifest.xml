@@ -27,7 +27,7 @@
         <provider
             android:name=".data.local.TriviaProvider"
             android:authorities="com.equipevii.triviamaster.triviaprovider"
-            android:exported="true" />
+            android:exported="false" />
 
     </application>
 

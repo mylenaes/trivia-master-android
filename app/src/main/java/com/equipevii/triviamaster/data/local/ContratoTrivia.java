@@ -7,29 +7,43 @@ public final class ContratoTrivia {
     public static final String AUTHORITY = "com.equipevii.triviamaster.triviaprovider";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + AUTHORITY);
 
-    public static final class TabelaPartida implements BaseColumns {
-        public static final String TABELA_NOME = "match";
-        public static final String COLUNA_JOGADOR = "match_player";
-        public static final String COLUNA_CATEGORIA = "match_category";
-        public static final String COLUNA_DIFICULDADE = "match_difficulty";
-        public static final String COLUNA_ACERTOS = "correct_guesses";
-        public static final String COLUNA_TOTAL = "total_guesses";
-        public static final String COLUNA_PONTUACAO = "match_score";
-        public static final String COLUNA_DATA = "match_time";
+    public static final class RegistroPartida implements BaseColumns {
+        public static final String TABELA_NOME = "partida";
+        public static final String COLUNA_JOGADOR = "partida_jogador";
+        public static final String COLUNA_CATEGORIA = "partida_categoria";
+        public static final String COLUNA_DIFICULDADE = "partida_dificuldade";
+        public static final String COLUNA_ACERTOS = "partida_acertos";
+        public static final String COLUNA_TOTAL = "partida_total";
+        public static final String COLUNA_PONTUACAO = "partida_pontuacao";
+        public static final String COLUNA_DATA = "partida_data";
 
         public static final Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI,
-                "matches");
+                "partidas");
     }
 
+    public static final class RegistroQuestao implements BaseColumns {
+        public static final String TABELA_NOME = "questao";
+        public static final String COLUNA_CATEGORIA = "questao_categoria";
+        public static final String COLUNA_DIFICULDADE = "questao_dificuldade";
+        public static final String COLUNA_ENUNCIADO = "questao_enunciado";
+        public static final String COLUNA_RESPOSTA_CORRETA = "resposta_correta";
+        public static final String COLUNA_RESPOSTAS_ERRADAS = "respostas_erradas";
+
+        public static final Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI,
+                "questoes");
+    }
+
+
+
     public static final String SQL_CREATE_ENTRIES =
-            "CREATE TABLE: " + TabelaPartida.TABELA_NOME + " (" + TabelaPartida._ID +
-            " INTEGER PRIMARY KEY," + TabelaPartida.COLUNA_JOGADOR
-            + " TEXT," + TabelaPartida.COLUNA_CATEGORIA + " TEXT," +
-            TabelaPartida.COLUNA_DIFICULDADE + " TEXT," + TabelaPartida.COLUNA_ACERTOS
-            + " INTEGER," + TabelaPartida.COLUNA_TOTAL + " INTEGER," +
-            TabelaPartida.COLUNA_PONTUACAO + " INTEGER," + TabelaPartida.COLUNA_DATA +
+            "CREATE TABLE: " + RegistroPartida.TABELA_NOME + " (" + RegistroPartida._ID +
+            " INTEGER PRIMARY KEY," + RegistroPartida.COLUNA_JOGADOR
+            + " TEXT," + RegistroPartida.COLUNA_CATEGORIA + " TEXT," +
+            RegistroPartida.COLUNA_DIFICULDADE + " TEXT," + RegistroPartida.COLUNA_ACERTOS
+            + " INTEGER," + RegistroPartida.COLUNA_TOTAL + " INTEGER," +
+            RegistroPartida.COLUNA_PONTUACAO + " INTEGER," + RegistroPartida.COLUNA_DATA +
             " TEXT)";
 
     public static final String SQL_DELETE_ENTRIES =
-            "DROP TABLE IF EXISTS " + TabelaPartida.TABELA_NOME;
+            "DROP TABLE IF EXISTS " + RegistroPartida.TABELA_NOME;
 }

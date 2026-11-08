@@ -11,13 +11,18 @@ import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 
 public class TriviaProvider extends ContentProvider{
-    private static final int PARTIDAS_TODAS = 1;
+    private static final int PARTIDAS = 1;
     private static final int PARTIDAS_ID = 2;
+
+    private static final int QUESTOES = 3;
+    private static final int QUESTOES_ID = 4;
 
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
     static{
-        uriMatcher.addURI(ContratoTrivia.AUTHORITY, "matches", PARTIDAS_TODAS);
-        uriMatcher.addURI(ContratoTrivia.AUTHORITY, "matches/*", PARTIDAS_ID);
+        uriMatcher.addURI(ContratoTrivia.AUTHORITY, "partidas", PARTIDAS);
+        uriMatcher.addURI(ContratoTrivia.AUTHORITY, "partidas/*", PARTIDAS_ID);
+        uriMatcher.addURI(ContratoTrivia.AUTHORITY, "questoes", QUESTOES);
+        uriMatcher.addURI(ContratoTrivia.AUTHORITY, "questoes/*", QUESTOES_ID);
     }
 
     private BancoTriviaHelper dbHelper;
@@ -34,10 +39,14 @@ public class TriviaProvider extends ContentProvider{
     @Override
     public String getType(Uri uri){
         switch(uriMatcher.match(uri)){
-            case PARTIDAS_TODAS:
-                return "vnd.android.cursor.dir/matches";
+            case PARTIDAS:
+                return "vnd.android.cursor.dir/partidas";
             case PARTIDAS_ID:
-                return "vnd.android.cursor.item/matches";
+                return "vnd.android.cursor.item/partidas";
+            case QUESTOES:
+                return "vnd.android.cursor.dir/questoes";
+            case QUESTOES_ID:
+                return "vnd.android.cursor.item/questoes";
             default:
                 throw new IllegalArgumentException("URI desconhecida: " + uri);
         }
@@ -48,47 +57,99 @@ public class TriviaProvider extends ContentProvider{
                         String[] selectionArgs, String sortOrder){
         Cursor cursor;
         switch(uriMatcher.match(uri)){
-            case PARTIDAS_TODAS:
-                cursor = db.query(ContratoTrivia.TabelaPartida.TABELA_NOME, null,
+            case PARTIDAS:
+                cursor = db.query(ContratoTrivia.RegistroPartida.TABELA_NOME, null,
                         null, null, null, null, sortOrder);
                 break;
             case PARTIDAS_ID:
-                cursor = db.query(ContratoTrivia.TabelaPartida.TABELA_NOME, null,
+                cursor = db.query(ContratoTrivia.RegistroPartida.TABELA_NOME, null,
+                        selection, new String[] {String.valueOf(selection)},
+                        null, null, sortOrder);
+                break;
+            case QUESTOES:
+                cursor = db.query(ContratoTrivia.RegistroQuestao.TABELA_NOME, null,
+                        null, null, null, null, sortOrder);
+                break;
+            case QUESTOES_ID:
+                cursor = db.query(ContratoTrivia.RegistroQuestao.TABELA_NOME, null,
                         selection, new String[] {String.valueOf(selection)},
                         null, null, sortOrder);
                 break;
             default:
                 throw new IllegalArgumentException("URI não suportada: " + uri);
         }
-        cursor.setNotificationUri(getContext().getContentResolver(), uri);
+        if (getContext() != null) {
+            cursor.setNotificationUri(getContext().getContentResolver(), uri);
+        }
         return cursor;
     }
 
     @Override
     public Uri insert(Uri uri, ContentValues values){
-        long rowId = db.insert(ContratoTrivia.TabelaPartida.TABELA_NOME, null, values);
-        if(rowId > 0){
-            Uri newUri = ContentUris.withAppendedId(ContratoTrivia.TabelaPartida.CONTENT_URI, rowId);
-            getContext().getContentResolver().notifyChange(newUri, null);
-            return newUri;
+        Uri newUri;
+        long rowId;
+
+        switch(uriMatcher.match(uri)){
+            case PARTIDAS:
+                rowId = db.insert(ContratoTrivia.RegistroPartida.TABELA_NOME, null, values);
+                if(rowId > 0){
+                    newUri = ContentUris.withAppendedId(ContratoTrivia.RegistroPartida.CONTENT_URI, rowId);
+                }
+                else{
+                    throw new SQLiteException("Erro ao adicionar valores em " + uri);
+                }
+                break;
+            case QUESTOES:
+                rowId = db.insertWithOnConflict(ContratoTrivia.RegistroQuestao.TABELA_NOME,
+                        null, values, SQLiteDatabase.CONFLICT_REPLACE);
+                if(rowId > 0){
+                    newUri = ContentUris.withAppendedId(ContratoTrivia.RegistroQuestao.CONTENT_URI, rowId);
+                }
+                else{
+                    throw new SQLiteException("Erro ao adicionar valores em " + uri);
+                }
+                break;
+            default:
+                throw new SQLiteException("URI desconhecida: " + uri);
         }
-        throw new SQLiteException("Erro ao adicionar valores em " + uri);
+        if (getContext() != null) {
+            getContext().getContentResolver().notifyChange(newUri, null);
+        }
+        return newUri;
     }
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs){
         int removedRows = 0;
-        if(uriMatcher.match(uri) > 2){
-            throw new IllegalArgumentException("URI desconhecida: " + uri);
+        switch(uriMatcher.match(uri)){
+            case PARTIDAS:
+                removedRows = db.delete(ContratoTrivia.RegistroPartida.TABELA_NOME, selection,
+                        selectionArgs);
+                break;
+            case QUESTOES:
+                removedRows = db.delete(ContratoTrivia.RegistroQuestao.TABELA_NOME, selection,
+                        selectionArgs);
+                break;
+            default:
+                throw new IllegalArgumentException("URI desconhecida: " + uri);
         }
-        removedRows = db.delete(ContratoTrivia.TabelaPartida.TABELA_NOME, selection,
-                selectionArgs);
-        getContext().getContentResolver().notifyChange(uri, null);
+        if (removedRows > 0 && getContext() != null) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
         return removedRows;
     }
 
     public int update(Uri uri, ContentValues values, String selection,
                       String[] selectionArgs){
-        throw new SecurityException("Operação de atualização não permitida.");
+        int updatedRows = 0;
+        if(uriMatcher.match(uri) == QUESTOES){
+            updatedRows = db.update(ContratoTrivia.RegistroQuestao.TABELA_NOME,
+                    values, selection, selectionArgs);
+            if (updatedRows > 0 && getContext() != null) {
+                getContext().getContentResolver().notifyChange(uri, null);
+            }
+            return updatedRows;
+        }
+        throw new SecurityException("URI não permitida: " + uri);
     }
 }
