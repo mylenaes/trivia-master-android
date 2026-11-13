@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_history_card"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="8dp"
+    android:padding="16dp"
+    android:elevation="2dp">
+
+    <TextView
+        android:id="@+id/cardPlayer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="sadasds"
+        android:fontFamily="@font/plus_jakarta_sans"
+        android:textColor="@android:color/black"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/cardScore"
+        android:layout_marginEnd="8dp"/>
+    
+    <TextView
+        android:id="@+id/cardCategoryDifficulty"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="blablabla · dqwdw"
+        android:fontFamily="@font/plus_jakarta_sans"
+        android:textColor="@color/card_text_color"
+        android:textSize="14sp"
+        android:layout_marginTop="4dp"
+        app:layout_constraintTop_toBottomOf="@id/cardPlayer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/cardScore"
+        android:layout_marginEnd="8dp" />
+    
+    <TextView
+        android:id="@+id/cardDateHour"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="ajdid, asdsadas"
+        android:fontFamily="@font/plus_jakarta_sans"
+        android:textColor="@color/card_text_color"
+        android:textSize="12sp"
+        android:layout_marginTop="4dp"
+        app:layout_constraintTop_toBottomOf="@id/cardCategoryDifficulty"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/cardScore"
+        android:layout_marginEnd="8dp" />
+
+    <TextView
+        android:id="@+id/cardScore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_score_stamp"
+        android:text="0/5"
+        android:textColor="@color/stamp_font_color"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:paddingHorizontal="13dp"
+        android:paddingVertical="8dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="2dp" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

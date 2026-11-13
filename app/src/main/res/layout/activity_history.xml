@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/historyView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_color"
+    tools:context=".ui.history.HistoricoActivity">
+
+    <View
+        android:id="@+id/historyViewHeader"
+        android:layout_width="0dp"
+        android:layout_height="120dp"
+        android:background="@color/header_color"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/historyViewText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/header_text"
+        android:textSize="30sp"
+        android:fontFamily="@font/plus_jakarta_sans"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        android:layout_marginStart="70dp"
+        android:layout_marginTop="45dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <ImageButton
+        android:id="@+id/historyButton"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:background="@drawable/bg_circle_button"
+        android:src="?attr/homeAsUpIndicator"
+        android:scaleType="centerInside"
+        app:tint="@color/white"
+        android:layout_marginEnd="13sp"
+        app:layout_constraintRight_toLeftOf="@id/historyViewText"
+        app:layout_constraintTop_toTopOf="@id/historyViewText"
+        app:layout_constraintBottom_toBottomOf="@id/historyViewText" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/historyRecycler"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:padding="8dp"
+        android:clipToPadding="false"
+        app:layout_constraintTop_toBottomOf="@id/historyViewText"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
