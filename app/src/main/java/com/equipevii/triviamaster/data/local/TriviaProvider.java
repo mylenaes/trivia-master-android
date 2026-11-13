@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.net.Uri;
+import androidx.annotation.NonNull;
 
 public class TriviaProvider extends ContentProvider{
     private static final int PARTIDAS = 1;
@@ -37,7 +38,7 @@ public class TriviaProvider extends ContentProvider{
     }
 
     @Override
-    public String getType(Uri uri){
+    public String getType(@NonNull Uri uri){
         switch(uriMatcher.match(uri)){
             case PARTIDAS:
                 return "vnd.android.cursor.dir/partidas";
@@ -53,7 +54,7 @@ public class TriviaProvider extends ContentProvider{
     }
 
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection,
+    public Cursor query(@NonNull Uri uri, String[] projection, String selection,
                         String[] selectionArgs, String sortOrder){
         Cursor cursor;
         switch(uriMatcher.match(uri)){
@@ -85,7 +86,7 @@ public class TriviaProvider extends ContentProvider{
     }
 
     @Override
-    public Uri insert(Uri uri, ContentValues values){
+    public Uri insert(@NonNull Uri uri, ContentValues values){
         Uri newUri;
         long rowId;
 
@@ -119,7 +120,7 @@ public class TriviaProvider extends ContentProvider{
     }
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs){
+    public int delete(@NonNull Uri uri, String selection, String[] selectionArgs){
         int removedRows = 0;
         switch(uriMatcher.match(uri)){
             case PARTIDAS:
@@ -139,7 +140,7 @@ public class TriviaProvider extends ContentProvider{
         return removedRows;
     }
 
-    public int update(Uri uri, ContentValues values, String selection,
+    public int update(@NonNull Uri uri, ContentValues values, String selection,
                       String[] selectionArgs){
         int updatedRows = 0;
         if(uriMatcher.match(uri) == QUESTOES){

@@ -16,6 +16,7 @@ public final class ContratoTrivia {
         public static final String COLUNA_TOTAL = "partida_total";
         public static final String COLUNA_PONTUACAO = "partida_pontuacao";
         public static final String COLUNA_DATA = "partida_data";
+        public static final String COLUNA_HORARIO = "partida_horario";
 
         public static final Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI,
                 "partidas");
@@ -42,7 +43,7 @@ public final class ContratoTrivia {
             RegistroPartida.COLUNA_DIFICULDADE + " TEXT," + RegistroPartida.COLUNA_ACERTOS
             + " INTEGER," + RegistroPartida.COLUNA_TOTAL + " INTEGER," +
             RegistroPartida.COLUNA_PONTUACAO + " INTEGER," + RegistroPartida.COLUNA_DATA +
-            " TEXT)";
+            " TEXT," + RegistroPartida.COLUNA_HORARIO + " TEXT)";
 
     public static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + RegistroPartida.TABELA_NOME;
