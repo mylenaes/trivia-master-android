@@ -12,11 +12,11 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 
 public class TriviaProvider extends ContentProvider{
-    private static final int PARTIDAS = 1;
-    private static final int PARTIDAS_ID = 2;
+    private static final int PARTIDAS = 101;
+    private static final int PARTIDAS_ID = 102;
 
-    private static final int QUESTOES = 3;
-    private static final int QUESTOES_ID = 4;
+    private static final int QUESTOES = 201;
+    private static final int QUESTOES_ID = 202;
 
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
     static{
@@ -121,7 +121,7 @@ public class TriviaProvider extends ContentProvider{
 
     @Override
     public int delete(@NonNull Uri uri, String selection, String[] selectionArgs){
-        int removedRows = 0;
+        int removedRows;
         switch(uriMatcher.match(uri)){
             case PARTIDAS:
                 removedRows = db.delete(ContratoTrivia.RegistroPartida.TABELA_NOME, selection,
@@ -142,7 +142,7 @@ public class TriviaProvider extends ContentProvider{
 
     public int update(@NonNull Uri uri, ContentValues values, String selection,
                       String[] selectionArgs){
-        int updatedRows = 0;
+        int updatedRows;
         if(uriMatcher.match(uri) == QUESTOES){
             updatedRows = db.update(ContratoTrivia.RegistroQuestao.TABELA_NOME,
                     values, selection, selectionArgs);

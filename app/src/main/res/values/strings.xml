@@ -3,4 +3,5 @@
     <string name="header_text">Meu histórico</string>
     <string name="category_difficulty">%1$s · %2$s</string>
     <string name="date_hour">%1$s, %2$s</string>
+    <string name="return_button_description">retorno</string>
 </resources>
