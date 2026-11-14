@@ -1,17 +1,13 @@
 package com.equipevii.triviamaster.ui.history;
 
-import android.database.Cursor;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
-import android.net.Uri;
-
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageButton;
 import com.equipevii.triviamaster.R;
-import com.equipevii.triviamaster.data.local.ContratoTrivia;
 
 public class HistoricoActivity extends AppCompatActivity {
 
