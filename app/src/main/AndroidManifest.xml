@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.equipevii.triviamaster">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -16,7 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TriviaMaster">
         <activity
-            android:name=".ui.inicio.MainActivity"
+            android:name=".ui.quiz.QuizActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
@@ -25,16 +24,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <provider
-            android:name=".data.local.TriviaProvider"
-            android:authorities="com.equipevii.triviamaster.triviaprovider"
-            android:exported="false" />
-
-        <activity
-            android:name=".ui.history.HistoricoActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>
