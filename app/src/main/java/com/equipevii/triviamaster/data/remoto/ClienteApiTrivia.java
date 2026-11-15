@@ -1,14 +1,14 @@
 package com.equipevii.triviamaster.data.remoto;
 
 import android.text.Html;
-import com.equipevii.triviamaster.model.Questao;
+
 import com.equipevii.triviamaster.model.ConfigPartida;
+import com.equipevii.triviamaster.model.Questao;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
@@ -20,115 +20,96 @@ import java.util.List;
 
 public class ClienteApiTrivia {
     private static final String URL_BASE = "https://opentdb.com/api.php";
-    private static final Object TRAVA = new Object();
 
-    //coordena a busca de questoes na API
-    //recebe o objeto ConfigPartida com as configuracoes escolhidas pelo jogador
-    public List<Questao> buscarQuestoes(ConfigPartida config) throws IOException, JSONException {
-        synchronized (TRAVA) {
-            String url = montarURL(config);
-            try {
-                String resposta = requisicaoGet(url);
-                return interpretarResposta(resposta);
-            } catch (SocketTimeoutException e) {
-                throw new IOException("Tempo de conexão esgotado!", e);
-            } catch (UnknownHostException e) {
-                throw new IOException("Sem conexão com a internet!", e);
-            }
+    public List<Questao> buscarQuestoes(ConfigPartida config) throws IOException {
+        String url = URL_BASE + "?amount=" + config.getQuantidade() + "&type=multiple";
+        // categoria e dificuldade vazias = a API escolhe qualquer uma
+        if (config.getCategoria() != null && !config.getCategoria().isEmpty()) {
+            url += "&category=" + config.getCategoria();
         }
-    }
-
-    //monta dinamicamente a URL que será utilizada pra consultar a API
-    private String montarURL(ConfigPartida config) {
-        StringBuilder construtor = new StringBuilder(URL_BASE);
-        construtor.append("?amount=").append(config.getQuantidade());
-        construtor.append("&type=multiple");
-
-        if (config.getCategoria() > 0) {
-            construtor.append("&category=").append(config.getCategoria());
+        if (config.getDificuldade() != null && !config.getDificuldade().isEmpty()) {
+            url += "&difficulty=" + config.getDificuldade();
         }
-        String dificuldade = config.getDificuldade();
 
-        if (dificuldade != null && !dificuldade.isEmpty()) {
-            construtor.append("&difficulty=").append(dificuldade);
-        }
-        return construtor.toString();
-    }
-
-    //faz a conexao com o Open Trivia db e recebe a resposta do servidor
-    private String requisicaoGet(String enderecoUrl) throws IOException {
-        HttpURLConnection conexao = (HttpURLConnection) new URL(enderecoUrl).openConnection();
+        int codigoHttp = -1;
+        StringBuilder json = new StringBuilder();
+        HttpURLConnection conexao = null;
 
         try {
-            conexao.setRequestMethod("GET");
+            conexao = (HttpURLConnection) new URL(url).openConnection();
             conexao.setConnectTimeout(10000);
             conexao.setReadTimeout(10000);
-            int codigoHttp = conexao.getResponseCode();
-
-            if (codigoHttp != HttpURLConnection.HTTP_OK) {
-                throw new IOException("Erro na comunicacao com o servidor!");
+            codigoHttp = conexao.getResponseCode();
+            if (codigoHttp == HttpURLConnection.HTTP_OK) {
+                BufferedReader leitor = new BufferedReader(
+                        new InputStreamReader(conexao.getInputStream(), StandardCharsets.UTF_8));
+                String linha;
+                while ((linha = leitor.readLine()) != null) {
+                    json.append(linha);
+                }
+                leitor.close();
             }
-            return lerFluxo(conexao.getInputStream());
+
+        } catch (SocketTimeoutException e) {
+            throw new IOException("A conexão demorou demais. Tente de novo.", e);
+        } catch (UnknownHostException e) {
+            throw new IOException("Sem conexão com a internet.", e);
+        } catch (IOException e) {
+            throw new IOException("Não foi possível conectar ao servidor.", e);
         } finally {
-            conexao.disconnect();
-        }
-    }
-
-    //metodo que le os dados recebidos da API e transforma o conteudo em uma string contendo o JSON
-    private String lerFluxo(InputStream entrada) throws IOException {
-        try (BufferedReader leitor = new BufferedReader(new InputStreamReader(entrada, StandardCharsets.UTF_8))) {
-            StringBuilder texto = new StringBuilder();
-            String linha;
-
-            while ((linha = leitor.readLine()) != null) {
-                texto.append(linha);
+            if (conexao != null) {
+                conexao.disconnect();
             }
-            return texto.toString();
         }
-    }
-
-    //interpreta o JSON recebido da API e transforma cada pergunta em um objeto java da classe Questao
-    private List<Questao> interpretarResposta(String corpo) throws JSONException, IOException {
-        JSONObject raiz = new JSONObject(corpo);
-        int codigoResposta = raiz.getInt("response_code");
-
-        if (codigoResposta != 0) {
-            throw new IOException("Não foi possivel obter questoes da API! (codigo " + codigoResposta + ")");
+        if (codigoHttp != HttpURLConnection.HTTP_OK) {
+            throw new IOException("O servidor de perguntas não respondeu. Tente novamente em alguns segundos.");
         }
-        JSONArray resultados = raiz.getJSONArray("results");
+
         List<Questao> questoes = new ArrayList<>();
 
-        for (int i = 0; i < resultados.length(); i++) {
-            JSONObject item = resultados.getJSONObject(i);
+        try {
+            JSONObject raiz = new JSONObject(json.toString());
+            int codigo = raiz.getInt("response_code");
 
-            String categoria = decodificar(item.getString("category"));
-            String dificuldade = decodificar(item.getString("difficulty"));
-            String enunciado = decodificar(item.getString("question"));
-            String correta = decodificar(item.getString("correct_answer"));
-
-            List<String> erradas = new ArrayList<>();
-
-            JSONArray arrayErradas = item.getJSONArray("incorrect_answers");
-
-            for (int j = 0; j < arrayErradas.length(); j++) {
-                erradas.add(decodificar(arrayErradas.getString(j)));
+            if (codigo == 1) {
+                throw new IOException("Não há perguntas suficientes para essa configuração. "
+                        + "Tente diminuir a quantidade ou trocar a categoria.");
             }
-            questoes.add(new Questao(
-                    categoria,
-                    dificuldade,
-                    enunciado,
-                    correta,
-                    erradas
-            ));
+            if (codigo != 0) {
+                throw new IOException("Não foi possível carregar as perguntas (código " + codigo
+                        + "). Tente novamente em alguns segundos.");
+            }
+
+            JSONArray resultados = raiz.getJSONArray("results");
+
+            for (int i = 0; i < resultados.length(); i++) {
+                JSONObject item = resultados.getJSONObject(i);
+
+                JSONArray arrayErradas = item.getJSONArray("incorrect_answers");
+                String[] erradas = new String[arrayErradas.length()];
+                for (int j = 0; j < erradas.length; j++) {
+                    erradas[j] = decodificar(arrayErradas.getString(j));
+                }
+
+                questoes.add(new Questao(
+                        0,
+                        decodificar(item.getString("category")),
+                        item.getString("difficulty"),
+                        decodificar(item.getString("question")),
+                        decodificar(item.getString("correct_answer")),
+                        erradas
+                ));
+            }
+
+        } catch (JSONException e) {
+            throw new IOException("A resposta do servidor veio com problema.", e);
         }
+
         return questoes;
     }
 
-    //Converte entidades HTML em caracteres normais
+    // a API manda os textos com &quot; &#039; etc.
     private String decodificar(String texto) {
-        return Html.fromHtml(
-                texto,
-                Html.FROM_HTML_MODE_LEGACY
-        ).toString();
+        return Html.fromHtml(texto, Html.FROM_HTML_MODE_LEGACY).toString();
     }
 }
