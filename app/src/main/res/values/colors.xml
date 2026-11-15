@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="button_color">#1AFFFFFF</color>
-    <color name="header_color">#162556</color>
-    <color name="background_color">#F3F4F6</color>
-    <color name="stamp_back_color">#1A4783EC</color>
-    <color name="stamp_font_color">#4783EC</color>
-    <color name="card_text_color">#64748B</color>
+    <color name="branco">#FFFFFFFF</color>
+    <color name="brancoFundo">#F6F3F4</color>
+    <color name="brancoBorda">#E2E5EA</color>
+    <color name="brancoAzulado">#DFE6F0</color>
+    <color name="azulPrincipal">#162556</color>
+    <color name="azulSecundario">#3B82F6</color>
+    <color name="azulBebe">#A9C5F5</color>
+    <color name="azulCinzento">#62748E</color>
+    <color name="cinza">#62748E</color>
+    <color name="vermelhoClaro">#FFE5E1</color>
+    <color name="vermelho">#D93025</color>
+    <color name="verdeClaro">#D8F9DD</color>
+    <color name="verde">#1EAB53</color>
 </resources>
