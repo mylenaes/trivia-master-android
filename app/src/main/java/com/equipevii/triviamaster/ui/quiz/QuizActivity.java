@@ -1,15 +1,15 @@
 package com.equipevii.triviamaster.ui.quiz;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.widget.LinearLayout;
 import android.graphics.Color;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.equipevii.triviamaster.R;
@@ -18,8 +18,6 @@ import com.equipevii.triviamaster.model.ConfigPartida;
 import com.equipevii.triviamaster.model.Partida;
 import com.equipevii.triviamaster.ui.BaseActivity;
 import com.equipevii.triviamaster.ui.resultado.ResultadoActivity;
-
-import android.content.Intent;
 
 public class QuizActivity extends BaseActivity {
     //chaves usadas pela tela de configuração para mandar os dados
