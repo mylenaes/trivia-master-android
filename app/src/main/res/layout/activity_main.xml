@@ -26,7 +26,6 @@
                 android:layout_height="48dp"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_ideia"
-                app:tint="@color/azulSecundario"
                 android:contentDescription="@string/app_name">
             </ImageView>
 
