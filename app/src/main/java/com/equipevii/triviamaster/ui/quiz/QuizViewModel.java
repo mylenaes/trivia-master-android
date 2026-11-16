@@ -233,6 +233,11 @@ public class QuizViewModel extends AndroidViewModel {
     }
 
     public boolean avancarQuestao(){
+        //se as questões ainda não chegaram, não tem para onde avançar
+        if(listaQuestoes == null){
+            return false;
+        }
+
         //avancar somente se não estiver na ultima questao
         if(indiceQuestaotual < listaQuestoes.size() - 1){
             indiceQuestaotual++;
@@ -244,6 +249,11 @@ public class QuizViewModel extends AndroidViewModel {
     }
 
     public void verificarResposta(String respostaEscolhida){
+        //se as questões ainda não chegaram, ignora o clique
+        if(listaQuestoes == null){
+            return;
+        }
+
         //verificar se já respondeu
         if(respondeu){
             return;
@@ -353,4 +363,6 @@ public class QuizViewModel extends AndroidViewModel {
  * - calcularPontos aceita "easy/medium/hard", que é como a API manda.
  * - Novo contador de acertos e finalizarPartida(), que salva a partida no histórico.
  * - Novos LiveData erro e partidaSalva, e getters usados pela tela de resultado.
+ * - verificarResposta e avancarQuestao ignoram cliques enquanto as questões
+ *   não chegaram (antes o app fechava se tocasse em Próxima nesse momento).
  */

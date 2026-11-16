@@ -1,32 +1,32 @@
 <resources>
     <string name="app_name">Trivia Master</string>
 
-    <!-- Quiz (Alice) -->
+    <!-- Quiz-->
     <string name="txtNumeroQuestao">Questão: 1</string>
     <string name="txtPontuacao">Pontos: 0</string>
-    <string name="txtCategoria">Computadores - Médio</string>
+    <string name="txtCategoria"></string>
     <string name="txtTempo">20s</string>
-    <string name="txtEnunciado">Qual linguagem é usada no Android Studio além de Java?</string>
+    <string name="txtEnunciado">Carregando questões...</string>
     <string name="a">A</string>
-    <string name="opcaoA">Swift</string>
+    <string name="opcaoA"></string>
     <string name="b">B</string>
-    <string name="opcaoB">Kotlin</string>
+    <string name="opcaoB"></string>
     <string name="c">C</string>
-    <string name="opcaoC">Ruby</string>
+    <string name="opcaoC"></string>
     <string name="d">D</string>
-    <string name="opcaoD">PHP</string>
+    <string name="opcaoD"></string>
     <string name="btnProximo">Próxima</string>
     <string name="correta">Resposta correta!</string>
     <string name="incorreta"> Resposta incorreta!</string>
     <string name="esgotado">Tempo esgotado!</string>
 
-    <!-- Histórico (Pedro) -->
+    <!--histórico-->
     <string name="header_text">Meu histórico</string>
     <string name="category_difficulty">%1$s · %2$s</string>
     <string name="date_hour">%1$s, %2$s</string>
     <string name="return_button_description">retorno</string>
 
-    <!-- Início -->
+    <!--início -->
     <string name="txtSubtituloInicio">Teste seus conhecimentos!</string>
     <string name="txtSemConexao">Sem conexão, usando questões salvas</string>
     <string name="txtSeuNome">Seu nome</string>
@@ -34,7 +34,7 @@
     <string name="btnComecar">Começar</string>
     <string name="btnHistorico">Meu histórico</string>
 
-    <!-- Configuração -->
+    <!-- configuracao -->
     <string name="txtNovaPartida">Nova partida</string>
     <string name="txtEscolhaCategoria">Categoria</string>
     <string name="txtEscolhaDificuldade">Dificuldade</string>
@@ -45,7 +45,7 @@
     <string name="btnIniciar">Iniciar quiz</string>
     <string name="btnVoltar">Voltar</string>
 
-    <!-- Resultado -->
+    <!--resultado -->
     <string name="txtAcertos">Acertos</string>
     <string name="txtErros">Erros</string>
     <string name="btnJogarNovamente">Jogar novamente</string>

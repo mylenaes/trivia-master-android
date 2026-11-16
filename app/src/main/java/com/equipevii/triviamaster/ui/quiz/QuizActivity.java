@@ -1,6 +1,8 @@
 package com.equipevii.triviamaster.ui.quiz;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.widget.LinearLayout;
 import android.graphics.Color;
 import android.view.View;
@@ -31,6 +33,10 @@ public class QuizActivity extends BaseActivity {
     private String opcaoCorreta;
 
     private QuizViewModel quizViewModel;
+
+    //espera 2s mostrando "tempo esgotado" e depois avança sozinho
+    private final Handler handlerAvanco = new Handler(Looper.getMainLooper());
+    private final Runnable avancoAutomatico = () -> irParaProxima();
 
 
     @Override
@@ -76,18 +82,23 @@ public class QuizActivity extends BaseActivity {
                         binding.opcaoD,
                         binding.tvOpcaoD.getText().toString()));
 
-        binding.btnProximo.setOnClickListener(v ->{
-            //checar se avancou a questao ou se chegou no final
-            boolean avancou = quizViewModel.avancarQuestao();
+        binding.btnProximo.setOnClickListener(v -> irParaProxima());
+    }
 
-            if(avancou){
-                resetarUIQuestao();
-            } else{
-                //acabou: salva a partida no histórico
-                binding.btnProximo.setEnabled(false);
-                quizViewModel.finalizarPartida();
-            }
-        });
+    private void irParaProxima(){
+        //se o jogador tocou em Próxima antes, cancela o avanço automático
+        handlerAvanco.removeCallbacks(avancoAutomatico);
+
+        //checar se avancou a questao ou se chegou no final
+        boolean avancou = quizViewModel.avancarQuestao();
+
+        if(avancou){
+            resetarUIQuestao();
+        } else{
+            //acabou: salva a partida no histórico
+            binding.btnProximo.setEnabled(false);
+            quizViewModel.finalizarPartida();
+        }
     }
 
     private void abrirResultado(){
@@ -263,6 +274,9 @@ public class QuizActivity extends BaseActivity {
             binding.tvFeedback.setTextColor(getColor(R.color.vermelho));
             binding.tvFeedback.setVisibility(View.VISIBLE);
             binding.btnProximo.setEnabled(true);
+
+            //avança sozinho depois de 2 segundos
+            handlerAvanco.postDelayed(avancoAutomatico, 2000);
         });
 
         //se não conseguiu buscar as questões, avisa e volta pra tela anterior
@@ -286,6 +300,13 @@ public class QuizActivity extends BaseActivity {
             abrirResultado();
         });
     }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        //se a tela fechar ou girar, cancela o avanço pendente
+        handlerAvanco.removeCallbacks(avancoAutomatico);
+    }
 }
 
 /*
@@ -299,4 +320,6 @@ public class QuizActivity extends BaseActivity {
  *   activity é recriada, então agora só pinta a opção se ela existir.
  * - Novos observers: getErro (sem questões, avisa e volta) e
  *   getPartidaSalva (abre o resultado depois de salvar).
+ * - Quando o tempo esgota, mostra o feedback por 2s e avança sozinho
+ *   (irParaProxima, usado também pelo botão Próxima).
  */
