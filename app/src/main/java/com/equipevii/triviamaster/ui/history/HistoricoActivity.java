@@ -1,7 +1,6 @@
 package com.equipevii.triviamaster.ui.history;
-
+import com.equipevii.triviamaster.ui.BaseActivity;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -9,8 +8,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import com.equipevii.triviamaster.R;
 
-public class HistoricoActivity extends AppCompatActivity {
-
+public class HistoricoActivity extends BaseActivity {
     private HistoricoAdapter adapter;
 
     @Override
@@ -40,3 +38,9 @@ public class HistoricoActivity extends AppCompatActivity {
         });
     }
 }
+
+/*
+ * Alteração (Mylena):
+ * - Agora estende BaseActivity em vez de AppCompatActivity, para tratar
+ *   o espaço da barra de status do Android 15 igual às outras telas.
+ */

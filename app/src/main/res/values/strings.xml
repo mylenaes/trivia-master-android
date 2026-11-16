@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Trivia Master</string>
+
+    <!-- Quiz (Alice) -->
     <string name="txtNumeroQuestao">Questão: 1</string>
     <string name="txtPontuacao">Pontos: 0</string>
     <string name="txtCategoria">Computadores - Médio</string>
@@ -17,4 +19,35 @@
     <string name="correta">Resposta correta!</string>
     <string name="incorreta"> Resposta incorreta!</string>
     <string name="esgotado">Tempo esgotado!</string>
+
+    <!-- Histórico (Pedro) -->
+    <string name="header_text">Meu histórico</string>
+    <string name="category_difficulty">%1$s · %2$s</string>
+    <string name="date_hour">%1$s, %2$s</string>
+    <string name="return_button_description">retorno</string>
+
+    <!-- Início -->
+    <string name="txtSubtituloInicio">Teste seus conhecimentos!</string>
+    <string name="txtSemConexao">Sem conexão, usando questões salvas</string>
+    <string name="txtSeuNome">Seu nome</string>
+    <string name="hintNome">Digite seu nome</string>
+    <string name="btnComecar">Começar</string>
+    <string name="btnHistorico">Meu histórico</string>
+
+    <!-- Configuração -->
+    <string name="txtNovaPartida">Nova partida</string>
+    <string name="txtEscolhaCategoria">Categoria</string>
+    <string name="txtEscolhaDificuldade">Dificuldade</string>
+    <string name="txtEscolhaQuantidade">Quantidade de questões</string>
+    <string name="txtFacil">Fácil</string>
+    <string name="txtMedio">Médio</string>
+    <string name="txtDificil">Difícil</string>
+    <string name="btnIniciar">Iniciar quiz</string>
+    <string name="btnVoltar">Voltar</string>
+
+    <!-- Resultado -->
+    <string name="txtAcertos">Acertos</string>
+    <string name="txtErros">Erros</string>
+    <string name="btnJogarNovamente">Jogar novamente</string>
+    <string name="btnInicio">Início</string>
 </resources>

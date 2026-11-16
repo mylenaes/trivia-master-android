@@ -1,7 +1,6 @@
 package com.equipevii.triviamaster.data.remoto;
 
 import android.text.Html;
-
 import com.equipevii.triviamaster.model.ConfigPartida;
 import com.equipevii.triviamaster.model.Questao;
 import org.json.JSONArray;
@@ -53,7 +52,7 @@ public class ClienteApiTrivia {
         } catch (SocketTimeoutException e) {
             throw new IOException("A conexão demorou demais. Tente de novo.", e);
         } catch (UnknownHostException e) {
-            throw new IOException("Sem conexão com a internet.", e);
+            throw new IOException("Sem conexao com a internet.", e);
         } catch (IOException e) {
             throw new IOException("Não foi possível conectar ao servidor.", e);
         } finally {
@@ -62,7 +61,7 @@ public class ClienteApiTrivia {
             }
         }
         if (codigoHttp != HttpURLConnection.HTTP_OK) {
-            throw new IOException("O servidor de perguntas não respondeu. Tente novamente em alguns segundos.");
+            throw new IOException("O servidor de perguntas não responde. Tente novamente em alguns segundos.");
         }
 
         List<Questao> questoes = new ArrayList<>();
@@ -70,27 +69,22 @@ public class ClienteApiTrivia {
         try {
             JSONObject raiz = new JSONObject(json.toString());
             int codigo = raiz.getInt("response_code");
-
             if (codigo == 1) {
-                throw new IOException("Não há perguntas suficientes para essa configuração. "
-                        + "Tente diminuir a quantidade ou trocar a categoria.");
+                throw new IOException("Não há perguntas suficientes para essa configuracão. "
+                        + "Tente diminuir a quantidade ou troca a categoria.");
             }
             if (codigo != 0) {
                 throw new IOException("Não foi possível carregar as perguntas (código " + codigo
                         + "). Tente novamente em alguns segundos.");
             }
-
             JSONArray resultados = raiz.getJSONArray("results");
-
             for (int i = 0; i < resultados.length(); i++) {
                 JSONObject item = resultados.getJSONObject(i);
-
                 JSONArray arrayErradas = item.getJSONArray("incorrect_answers");
                 String[] erradas = new String[arrayErradas.length()];
                 for (int j = 0; j < erradas.length; j++) {
                     erradas[j] = decodificar(arrayErradas.getString(j));
                 }
-
                 questoes.add(new Questao(
                         0,
                         decodificar(item.getString("category")),
@@ -104,11 +98,9 @@ public class ClienteApiTrivia {
         } catch (JSONException e) {
             throw new IOException("A resposta do servidor veio com problema.", e);
         }
-
         return questoes;
     }
 
-    // a API manda os textos com &quot; &#039; etc.
     private String decodificar(String texto) {
         return Html.fromHtml(texto, Html.FROM_HTML_MODE_LEGACY).toString();
     }

@@ -1,20 +1,30 @@
 package com.equipevii.triviamaster.ui.quiz;
 
-import androidx.lifecycle.ViewModel;
+import android.app.Application;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.equipevii.triviamaster.ui.model.Questao;
+import com.equipevii.triviamaster.data.repositorio.RepositorioTriviaImpl;
+import com.equipevii.triviamaster.data.repositorio.TriviaRepository;
+import com.equipevii.triviamaster.model.ConfigPartida;
+import com.equipevii.triviamaster.model.Partida;
+import com.equipevii.triviamaster.model.Questao;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import android.os.CountDownTimer;
 
 //uma view model pode manter os dados da partida separados da activity
-public class QuizViewModel extends ViewModel {
+public class QuizViewModel extends AndroidViewModel {
     private List<Questao> listaQuestoes;
     private int indiceQuestaotual = 0;
     private List<String> alternativasAtuais;
@@ -38,12 +48,125 @@ public class QuizViewModel extends ViewModel {
     private MutableLiveData<Integer> pontuacaoLiveData = new MutableLiveData<>();
     private MutableLiveData<Long> tempoLiveData = new MutableLiveData<>();
     private MutableLiveData<Boolean> tempoEsgotado = new MutableLiveData<>(); //se o tempo esgotou
+    private MutableLiveData<String> erro = new MutableLiveData<>(); //mensagem se não conseguir buscar as questões
+
+    private MutableLiveData<Boolean> partidaSalva = new MutableLiveData<>(); //true se salvou, false se deu erro
+
+    private final TriviaRepository repositorio;
+    private boolean buscando = false;
+    private ConfigPartida configPartida;
+    private int acertos = 0;
+    private boolean finalizou = false;
+    private Partida partidaFinal; //guardada para a tela de resultado
 
     //inicializar view model
-    public QuizViewModel(){
-        criarListaQuestoes();
+    public QuizViewModel(@NonNull Application application){
+        super(application);
+        repositorio = new RepositorioTriviaImpl(application);
         pontuacaoLiveData.setValue(0);
-        prepararQuestaoAtual();
+    }
+
+    //buscar as questões no repositório (api ou cache)
+    public void carregarQuestoes(ConfigPartida config){
+        //se já buscou (ex: girou a tela) não busca de novo
+        if(listaQuestoes != null || buscando){
+            return;
+        }
+        buscando = true;
+        configPartida = config;
+
+        repositorio.getQuestions(config, new TriviaRepository.Callback<List<Questao>>() {
+            @Override
+            public void onSuccess(List<Questao> questoes) {
+                listaQuestoes = questoes;
+                prepararQuestaoAtual();
+            }
+
+            @Override
+            public void onError(String message) {
+                buscando = false;
+                erro.setValue(message);
+            }
+        });
+    }
+
+    public LiveData<String> getErro(){
+        return erro;
+    }
+
+    public LiveData<Boolean> getPartidaSalva(){
+        return partidaSalva;
+    }
+
+    public int getAcertos(){
+        return acertos;
+    }
+
+    public int getTotalQuestoes(){
+        return listaQuestoes == null ? 0 : listaQuestoes.size();
+    }
+
+    public int getPontuacaoFinal(){
+        return pontuacaoAtual;
+    }
+
+    public Partida getPartidaFinal(){
+        return partidaFinal;
+    }
+
+    //salvar a partida no histórico quando acabar as questões
+    public void finalizarPartida(){
+        //não deixar salvar duas vezes se clicar rápido
+        if(finalizou || listaQuestoes == null){
+            return;
+        }
+        finalizou = true;
+
+        String jogador = configPartida.getNomeJogador();
+        if(jogador == null || jogador.isEmpty()){
+            jogador = "Jogador";
+        }
+
+        //se escolheu qualquer categoria as questões vêm misturadas
+        String categoria = "Qualquer categoria";
+        if(configPartida.getCategoria() != null && !configPartida.getCategoria().isEmpty()){
+            categoria = listaQuestoes.get(0).getCategoria();
+        }
+
+        String dificuldade = "Qualquer dificuldade";
+        if(configPartida.getDificuldade() != null){
+            switch (configPartida.getDificuldade()){
+                case "easy":
+                    dificuldade = "Fácil";
+                    break;
+                case "medium":
+                    dificuldade = "Médio";
+                    break;
+                case "hard":
+                    dificuldade = "Difícil";
+                    break;
+            }
+        }
+
+        Date agora = new Date();
+        String data = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(agora);
+        String horario = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(agora);
+
+        Partida partida = new Partida(0, jogador, categoria, dificuldade, acertos,
+                listaQuestoes.size(), pontuacaoAtual, data, horario);
+        partidaFinal = partida;
+
+        repositorio.saveMatch(partida, new TriviaRepository.Callback<Long>() {
+            @Override
+            public void onSuccess(Long id) {
+                partidaSalva.setValue(true);
+            }
+
+            @Override
+            public void onError(String message) {
+                partidaSalva.setValue(false);
+            }
+        });
     }
 
     public LiveData<Questao> getQuestaoAtual(){
@@ -78,51 +201,6 @@ public class QuizViewModel extends ViewModel {
         return tempoEsgotado;
     }
 
-    private void criarListaQuestoes(){
-        listaQuestoes = new ArrayList<>();
-
-        listaQuestoes.add(new Questao(
-                1,
-                "Computadores",
-                "Médio",
-                "Qual linguagem é usada no Android Studio além de Java?",
-                "Kotlin",
-                Arrays.asList("Swift", "Ruby", "PHP")
-        ));
-        listaQuestoes.add(new Questao(
-                2,
-                "Computadores",
-                "Médio",
-                "Quantos bits tem um byte?",
-                "8",
-                Arrays.asList("4", "16", "32")
-        ));
-        listaQuestoes.add(new Questao(
-                3,
-                "Computadores",
-                "Médio",
-                "Qual porta padrão do HTTPS?",
-                "443",
-                Arrays.asList("80", "21", "8080")
-        ));
-        listaQuestoes.add(new Questao(
-                4,
-                "Computadores",
-                "Médio",
-                "Qual empresa criou o Android?",
-                "Google",
-                Arrays.asList("Apple", "Microsoft", "Samsung")
-        ));
-        listaQuestoes.add(new Questao(
-                5,
-                "Computadores",
-                "Médio",
-                "O que significa CPU?",
-                "Central Processing Unit",
-                Arrays.asList("Computer Power Unit", "Core Program Utility", "Central Print Unit")
-        ));
-    }
-
     private void prepararQuestaoAtual(){
         //pegar questão atual
         Questao questao = listaQuestoes.get(indiceQuestaotual);
@@ -130,7 +208,7 @@ public class QuizViewModel extends ViewModel {
         respondeu = false;
         //pegar as alternativas da questão atual
         List<String> alternativas = new ArrayList<>(
-                questao.getRespostasErradas()
+                Arrays.asList(questao.getRespostasErradas())
         );
         alternativas.add(questao.getRespostaCorreta());
         //embaralhar alternativas
@@ -183,6 +261,7 @@ public class QuizViewModel extends ViewModel {
         respostaCorreta.setValue(correta);
 
         if(correta){
+            acertos++;
             //pegar questao atual
             Questao questao = listaQuestoes.get(indiceQuestaotual);
             //calcular pontos por dificuldade
@@ -199,10 +278,13 @@ public class QuizViewModel extends ViewModel {
         String dificuldade = questao.getDificuldade();
 
         switch (dificuldade.toLowerCase()){
+            case "easy": //a api manda a dificuldade em inglês
             case "fácil":
                 return 1;
+            case "medium":
             case "médio":
                 return 2;
+            case "hard":
             case "difícil":
                 return 3;
             default:
@@ -261,5 +343,14 @@ public class QuizViewModel extends ViewModel {
             countDownTimer.cancel();
         }
     }
-
 }
+
+/*
+ * Alterações (Mylena):
+ * - Agora é AndroidViewModel, para o repositório ter o Context.
+ * - As questões vêm do repositório (API ou cache) por carregarQuestoes(config),
+ *   no lugar da lista fixa. Usa o modelo Questao da equipe (respostas em String[]).
+ * - calcularPontos aceita "easy/medium/hard", que é como a API manda.
+ * - Novo contador de acertos e finalizarPartida(), que salva a partida no histórico.
+ * - Novos LiveData erro e partidaSalva, e getters usados pela tela de resultado.
+ */

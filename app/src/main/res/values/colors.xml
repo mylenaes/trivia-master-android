@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Paleta do app (Alice) -->
     <color name="branco">#FFFFFFFF</color>
     <color name="brancoFundo">#F6F3F4</color>
     <color name="brancoBorda">#E2E5EA</color>
@@ -13,4 +14,17 @@
     <color name="vermelho">#D93025</color>
     <color name="verdeClaro">#D8F9DD</color>
     <color name="verde">#1EAB53</color>
+
+    <!-- Histórico (Pedro) -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="button_color">#1AFFFFFF</color>
+    <color name="header_color">#162556</color>
+    <color name="background_color">#F3F4F6</color>
+    <color name="stamp_back_color">#1A4783EC</color>
+    <color name="stamp_font_color">#4783EC</color>
+    <color name="card_text_color">#64748B</color>
+
+    <!-- Início, configuração e resultado -->
+    <color name="cinzaClaro">#EEF2F7</color>
 </resources>

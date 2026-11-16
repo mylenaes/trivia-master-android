@@ -1,6 +1,5 @@
 package com.equipevii.triviamaster.ui.history;
 import com.equipevii.triviamaster.data.local.ContratoTrivia;
-
 import android.app.Application;
 import android.database.Cursor;
 import android.net.Uri;
@@ -30,7 +29,7 @@ public class HistoricoExecutor extends AndroidViewModel {
             public void run() {
                 Uri uri = ContratoTrivia.RegistroPartida.CONTENT_URI;
                 Cursor newCursor = getApplication().getContentResolver().query(uri,null,
-                        null,null, "partida_data DESC");
+                        null,null, ContratoTrivia.RegistroPartida._ID + " DESC");
 
                 cursor.postValue(newCursor);
             }

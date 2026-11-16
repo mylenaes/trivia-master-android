@@ -18,10 +18,26 @@ public class Questao {
         this.respostasErradas = respostasErradas;
     }
 
-    public int getId(){ return id; }
-    public String getCategoria(){ return categoria; }
-    public String getDificuldade(){ return dificuldade; }
-    public String getEnunciado(){ return enunciado; }
-    public String getRespostaCorreta(){ return respostaCorreta; }
-    public String[] getRespostasErradas(){ return respostasErradas; }
+    public int getId(){
+        return id;
+    }
+
+    public String getCategoria(){
+        return categoria;
+    }
+
+    public String getDificuldade(){
+        return dificuldade;
+    }
+
+    public String getEnunciado(){
+        return enunciado;
+    }
+
+    public String getRespostaCorreta(){
+        return respostaCorreta;
+    }
+    public String[] getRespostasErradas(){
+        return respostasErradas;
+    }
 }

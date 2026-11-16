@@ -14,27 +14,28 @@ import androidx.annotation.NonNull;
 public class TriviaProvider extends ContentProvider{
     private static final int PARTIDAS = 101;
     private static final int PARTIDAS_ID = 102;
-
     private static final int QUESTOES = 201;
     private static final int QUESTOES_ID = 202;
 
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
     static{
         uriMatcher.addURI(ContratoTrivia.AUTHORITY, "partidas", PARTIDAS);
-        uriMatcher.addURI(ContratoTrivia.AUTHORITY, "partidas/*", PARTIDAS_ID);
+        uriMatcher.addURI(ContratoTrivia.AUTHORITY, "partidas/#", PARTIDAS_ID);
         uriMatcher.addURI(ContratoTrivia.AUTHORITY, "questoes", QUESTOES);
-        uriMatcher.addURI(ContratoTrivia.AUTHORITY, "questoes/*", QUESTOES_ID);
+        uriMatcher.addURI(ContratoTrivia.AUTHORITY, "questoes/#", QUESTOES_ID);
     }
 
     private BancoTriviaHelper dbHelper;
-    private SQLiteDatabase db;
 
     @Override
     public boolean onCreate(){
         Context context = getContext();
         dbHelper = new BancoTriviaHelper(context);
-        db = dbHelper.getWritableDatabase();
-        return db != null;
+        return true;
+    }
+
+    private SQLiteDatabase banco(){
+        return dbHelper.getWritableDatabase();
     }
 
     @Override
@@ -59,21 +60,23 @@ public class TriviaProvider extends ContentProvider{
         Cursor cursor;
         switch(uriMatcher.match(uri)){
             case PARTIDAS:
-                cursor = db.query(ContratoTrivia.RegistroPartida.TABELA_NOME, null,
-                        null, null, null, null, sortOrder);
+                cursor = banco().query(ContratoTrivia.RegistroPartida.TABELA_NOME, projection,
+                        selection, selectionArgs, null, null, sortOrder);
                 break;
             case PARTIDAS_ID:
-                cursor = db.query(ContratoTrivia.RegistroPartida.TABELA_NOME, null,
-                        selection, new String[] {String.valueOf(selection)},
+                cursor = banco().query(ContratoTrivia.RegistroPartida.TABELA_NOME, projection,
+                        ContratoTrivia.RegistroPartida._ID + " = ?",
+                        new String[] {String.valueOf(ContentUris.parseId(uri))},
                         null, null, sortOrder);
                 break;
             case QUESTOES:
-                cursor = db.query(ContratoTrivia.RegistroQuestao.TABELA_NOME, null,
-                        null, null, null, null, sortOrder);
+                cursor = banco().query(ContratoTrivia.RegistroQuestao.TABELA_NOME, projection,
+                        selection, selectionArgs, null, null, sortOrder);
                 break;
             case QUESTOES_ID:
-                cursor = db.query(ContratoTrivia.RegistroQuestao.TABELA_NOME, null,
-                        selection, new String[] {String.valueOf(selection)},
+                cursor = banco().query(ContratoTrivia.RegistroQuestao.TABELA_NOME, projection,
+                        ContratoTrivia.RegistroQuestao._ID + " = ?",
+                        new String[] {String.valueOf(ContentUris.parseId(uri))},
                         null, null, sortOrder);
                 break;
             default:
@@ -92,7 +95,7 @@ public class TriviaProvider extends ContentProvider{
 
         switch(uriMatcher.match(uri)){
             case PARTIDAS:
-                rowId = db.insert(ContratoTrivia.RegistroPartida.TABELA_NOME, null, values);
+                rowId = banco().insert(ContratoTrivia.RegistroPartida.TABELA_NOME, null, values);
                 if(rowId > 0){
                     newUri = ContentUris.withAppendedId(ContratoTrivia.RegistroPartida.CONTENT_URI, rowId);
                 }
@@ -101,7 +104,7 @@ public class TriviaProvider extends ContentProvider{
                 }
                 break;
             case QUESTOES:
-                rowId = db.insertWithOnConflict(ContratoTrivia.RegistroQuestao.TABELA_NOME,
+                rowId = banco().insertWithOnConflict(ContratoTrivia.RegistroQuestao.TABELA_NOME,
                         null, values, SQLiteDatabase.CONFLICT_REPLACE);
                 if(rowId > 0){
                     newUri = ContentUris.withAppendedId(ContratoTrivia.RegistroQuestao.CONTENT_URI, rowId);
@@ -124,11 +127,11 @@ public class TriviaProvider extends ContentProvider{
         int removedRows;
         switch(uriMatcher.match(uri)){
             case PARTIDAS:
-                removedRows = db.delete(ContratoTrivia.RegistroPartida.TABELA_NOME, selection,
+                removedRows = banco().delete(ContratoTrivia.RegistroPartida.TABELA_NOME, selection,
                         selectionArgs);
                 break;
             case QUESTOES:
-                removedRows = db.delete(ContratoTrivia.RegistroQuestao.TABELA_NOME, selection,
+                removedRows = banco().delete(ContratoTrivia.RegistroQuestao.TABELA_NOME, selection,
                         selectionArgs);
                 break;
             default:
@@ -140,11 +143,12 @@ public class TriviaProvider extends ContentProvider{
         return removedRows;
     }
 
+    @Override
     public int update(@NonNull Uri uri, ContentValues values, String selection,
                       String[] selectionArgs){
         int updatedRows;
         if(uriMatcher.match(uri) == QUESTOES){
-            updatedRows = db.update(ContratoTrivia.RegistroQuestao.TABELA_NOME,
+            updatedRows = banco().update(ContratoTrivia.RegistroQuestao.TABELA_NOME,
                     values, selection, selectionArgs);
             if (updatedRows > 0 && getContext() != null) {
                 getContext().getContentResolver().notifyChange(uri, null);
@@ -154,3 +158,14 @@ public class TriviaProvider extends ContentProvider{
         throw new SecurityException("URI não permitida: " + uri);
     }
 }
+
+/*
+ * Alterações (Mylena):
+ * - Corrigido "CREATE TABLE:" para "CREATE TABLE" (os dois-pontos davam erro
+ *   de SQL e o app fechava ao abrir o banco).
+ * - Criados SQL_CREATE_QUESTOES e SQL_DELETE_QUESTOES: a tabela "questao"
+ *   não era criada, então o cache offline não tinha onde salvar.
+ * - Nova coluna COLUNA_ID_CATEGORIA: guarda o id da categoria (ex: "18"),
+ *   porque a API só devolve o nome e o cache precisa filtrar pelo id.
+ * - UNIQUE no enunciado para a mesma questão não ser salva duas vezes.
+ */

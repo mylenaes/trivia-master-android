@@ -15,15 +15,31 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TriviaMaster">
         <activity
-            android:name=".ui.quiz.QuizActivity"
-            android:exported="true"
-            android:windowSoftInputMode="adjustResize">
+            android:name=".ui.inicio.MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ui.configuracao.ConfiguracaoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.quiz.QuizActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.resultado.ResultadoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.history.HistoricoActivity"
+            android:exported="false" />
+        <provider
+            android:name=".data.local.TriviaProvider"
+            android:authorities="com.equipevii.triviamaster.triviaprovider"
+            android:exported="false" />
+        <service
+            android:name=".service.CacheQuestoesService"
+            android:exported="false" />
     </application>
-
 </manifest>

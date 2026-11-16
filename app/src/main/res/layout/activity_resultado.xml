@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/brancoFundo"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="24dp">
+
+        <!--Troféu-->
+        <FrameLayout
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:background="@drawable/bg_circulo_claro">
+
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_trofeu"
+                app:tint="@color/azulSecundario"
+                android:importantForAccessibility="no">
+            </ImageView>
+
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/tvMensagem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:textColor="@color/azulPrincipal"
+            android:textSize="30sp"
+            android:textStyle="bold">
+        </TextView>
+
+        <TextView
+            android:id="@+id/tvSubtitulo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/cinza"
+            android:textSize="16sp">
+        </TextView>
+
+        <!--Cartão do placar-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:background="@drawable/bg_card_escuro"
+            android:padding="24dp">
+
+            <TextView
+                android:id="@+id/tvPlacar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/branco"
+                android:textSize="48sp"
+                android:textStyle="bold">
+            </TextView>
+
+            <TextView
+                android:id="@+id/tvPorcentagem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/azulBebe"
+                android:textSize="16sp">
+            </TextView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal">
+
+                <!--Acertos-->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:background="@drawable/bg_caixa_resultado"
+                    android:paddingVertical="14dp">
+
+                    <TextView
+                        android:id="@+id/tvAcertos"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/verde"
+                        android:textSize="22sp"
+                        android:textStyle="bold">
+                    </TextView>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/txtAcertos"
+                        android:textColor="@color/branco"
+                        android:textSize="14sp">
+                    </TextView>
+
+                </LinearLayout>
+
+                <!--Erros-->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:background="@drawable/bg_caixa_resultado"
+                    android:paddingVertical="14dp">
+
+                    <TextView
+                        android:id="@+id/tvErros"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/vermelho"
+                        android:textSize="22sp"
+                        android:textStyle="bold">
+                    </TextView>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/txtErros"
+                        android:textColor="@color/branco"
+                        android:textSize="14sp">
+                    </TextView>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!--Pontuação, categoria e dificuldade (pedidos na documentação)-->
+            <TextView
+                android:id="@+id/tvPontuacaoFinal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:textColor="@color/branco"
+                android:textSize="18sp"
+                android:textStyle="bold">
+            </TextView>
+
+            <TextView
+                android:id="@+id/tvCategoriaDificuldade"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:gravity="center"
+                android:textColor="@color/azulBebe"
+                android:textSize="14sp">
+            </TextView>
+
+        </LinearLayout>
+
+        <!--Buttons-->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnJogarNovamente"
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            android:layout_marginTop="28dp"
+            android:text="@string/btnJogarNovamente"
+            android:textAllCaps="false"
+            android:textColor="@color/branco"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            app:backgroundTint="@color/azulSecundario"
+            app:cornerRadius="20dp"
+            app:icon="@drawable/ic_jogar_novamente"
+            app:iconTint="@color/branco"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp">
+        </com.google.android.material.button.MaterialButton>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnInicio"
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            android:layout_marginTop="10dp"
+            android:text="@string/btnInicio"
+            android:textAllCaps="false"
+            android:textColor="@color/azulPrincipal"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            app:backgroundTint="@color/branco"
+            app:strokeColor="@color/brancoAzulado"
+            app:strokeWidth="2dp"
+            app:cornerRadius="20dp"
+            app:icon="@drawable/ic_inicio"
+            app:iconTint="@color/azulPrincipal"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp">
+        </com.google.android.material.button.MaterialButton>
+
+    </LinearLayout>
+
+</ScrollView>
