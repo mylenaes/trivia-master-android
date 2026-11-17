@@ -306,18 +306,3 @@ public class QuizActivity extends BaseActivity {
         handlerAvanco.removeCallbacks(avancoAutomatico);
     }
 }
-
-/*
- * Alterações (Mylena):
- * - Estende BaseActivity (barra de status do Android 15).
- * - Recebe nome, categoria, dificuldade e quantidade pela Intent (EXTRA_...)
- *   e pede as questões ao ViewModel com carregarQuestoes(config).
- * - Na última questão, finalizarPartida() salva no histórico e abrirResultado()
- *   abre a tela de resultado (antes era só um Toast).
- * - Corrigido crash ao girar a tela: opcaoSelecionada fica null quando a
- *   activity é recriada, então agora só pinta a opção se ela existir.
- * - Novos observers: getErro (sem questões, avisa e volta) e
- *   getPartidaSalva (abre o resultado depois de salvar).
- * - Quando o tempo esgota, mostra o feedback por 2s e avança sozinho
- *   (irParaProxima, usado também pelo botão Próxima).
- */

@@ -354,15 +354,3 @@ public class QuizViewModel extends AndroidViewModel {
         }
     }
 }
-
-/*
- * Alterações (Mylena):
- * - Agora é AndroidViewModel, para o repositório ter o Context.
- * - As questões vêm do repositório (API ou cache) por carregarQuestoes(config),
- *   no lugar da lista fixa. Usa o modelo Questao da equipe (respostas em String[]).
- * - calcularPontos aceita "easy/medium/hard", que é como a API manda.
- * - Novo contador de acertos e finalizarPartida(), que salva a partida no histórico.
- * - Novos LiveData erro e partidaSalva, e getters usados pela tela de resultado.
- * - verificarResposta e avancarQuestao ignoram cliques enquanto as questões
- *   não chegaram (antes o app fechava se tocasse em Próxima nesse momento).
- */

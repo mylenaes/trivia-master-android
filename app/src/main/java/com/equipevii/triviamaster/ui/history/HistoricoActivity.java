@@ -38,9 +38,3 @@ public class HistoricoActivity extends BaseActivity {
         });
     }
 }
-
-/*
- * Alteração (Mylena):
- * - Agora estende BaseActivity em vez de AppCompatActivity, para tratar
- *   o espaço da barra de status do Android 15 igual às outras telas.
- */

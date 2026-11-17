@@ -59,14 +59,3 @@ public final class ContratoTrivia {
     public static final String SQL_DELETE_QUESTOES =
             "DROP TABLE IF EXISTS " + RegistroQuestao.TABELA_NOME;
 }
-
-/*
- * Alterações (Mylena):
- * - Corrigido "CREATE TABLE:" para "CREATE TABLE" (os dois-pontos davam erro
- *   de SQL e o app fechava ao abrir o banco).
- * - Criados SQL_CREATE_QUESTOES e SQL_DELETE_QUESTOES: a tabela "questao"
- *   não era criada, então o cache offline não tinha onde salvar.
- * - Nova coluna COLUNA_ID_CATEGORIA: guarda o id da categoria (ex: "18"),
- *   porque a API só devolve o nome e o cache precisa filtrar pelo id.
- * - UNIQUE no enunciado para a mesma questão não ser salva duas vezes.
- */

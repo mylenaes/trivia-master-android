@@ -21,11 +21,3 @@ public class BancoTriviaHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 }
-
-/*
- * Alterações (Mylena):
- * - Adicionada a tabela "questao" no onCreate e no onUpgrade.
- *   Ela guarda as questões que vêm da API, para o app jogar sem internet.
- * - DATABASE_VERSION mudou de 1 para 2, para o onUpgrade recriar as
- *   tabelas em quem já tinha o app instalado (o histórico antigo é apagado).
- */
